@@ -26,5 +26,18 @@ ou pour le lancer en mode développement (auto reload du backend)
 npm run dev
 ```
 
+
+## TODOs
+
+- Diagrammes
+  - Architecture
+  - Modèles
+  - Routes
+- Routes
+  - mock
+- extraction des websockets de app.js
+- voir reprendre les composants mis en place sur https://github.com/codlab/TwitchToast
+
+
 ## Licence
 This project is licensed under the MIT license.
