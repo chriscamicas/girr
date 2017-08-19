@@ -1,2 +1,3 @@
 # Modèle de données
-![model](/docs/model.svg)
+![model](http://chriscamicas.github.io/docs/model.svg)
+
