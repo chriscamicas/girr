@@ -13,7 +13,9 @@
 const CONNECTION = "connection",
 SET_TITLE = "setTitle",
 SET_INCRUST = "setIncrust",
+SET_PERSONNE = "setPersonne",
 CLEAR_INCRUST = "clearIncrust",
+CLEAR_SCREEN = "ecranvide"
 DEFAULT_TITLE = "GeekInc Remote Regie ready !";
 
 
@@ -30,7 +32,8 @@ WebSockets.prototype.setSocketIO = function(io) {
       timeout: 2
     };
 
-    socket.emit(SET_TITLE, config);
+    socket.emit(CLEAR_SCREEN);
+    //socket.emit(SET_TITLE, config);
 
     socket.on(SET_TITLE, data => {
       console.log(data);
@@ -42,6 +45,12 @@ WebSockets.prototype.setSocketIO = function(io) {
       console.log(data);
       //TODO check the file exists in the directory
       io.sockets.emit(SET_INCRUST, data);
+    });
+	
+	socket.on(SET_PERSONNE, data => {
+      console.log(data);
+      //TODO check the file exists in the directory
+      io.sockets.emit(SET_PERSONNE, data);
     });
 
     socket.on(CLEAR_INCRUST, data => {

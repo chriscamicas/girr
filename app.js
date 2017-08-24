@@ -12,6 +12,8 @@ mongoose.Promise = Promise;
 const websockets = new WebSockets(io);
 // monter les routes
 const emission = require('./routes/emission.js');
+const personne = require('./routes/personne.js');
+const photoprofil = require('./routes/photoprofil.js');
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -21,6 +23,8 @@ app.use(bodyParser.urlencoded({ extended: false }))
 // (middleware chargé de base)
 .use(express.static('./public'))
 .use('/api/emissions', emission)
+.use('/api/personnes', personne)
+.use('/api/photoprofil', photoprofil)
 .use((err, req, res, next) => {
   if(err) return res.status(500).send({ error: err });
   next();

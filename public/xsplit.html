@@ -7,48 +7,145 @@
 </head>
 
 <body>
-    <div id="title" class="transition text-geekinc hidden"></div>
+	<div id="imageContainer" class="transition hidden"><img id="icone"></div>
+    <div id="title" class="transition title-geekinc hidden"></div>
+    <div id="subtitle" class="transition subtitle-geekinc hidden"></div>
     <div class="incrust-container hidden"><img id="incrust"></div>
 </body>
 <script type="text/javascript">
     var socket = io.connect();
+    
+
+//  ## Title ##    
+    
     socket.on('setTitle', title => {
         setTitle(title);
     });
+    
     function setTitle(title) {
         var titleContainer = document.getElementById('title');
-        // title déjà présent, on le cache d abord...
-        if (!titleContainer.classList.contains('hidden') && title.text !== titleContainer.textContent) {
-            titleContainer.classList.add('hidden');
-            setTimeout(() => setTitle(title), 1000);
-            return;
-        }
+        var icone = document.getElementById('icone');
+		var imageContainer = document.getElementById('imageContainer');
+
+
+        clearscreen();
+
         // aucun title, on affiche
         titleContainer.textContent = title.text;
-        titleContainer.classList.remove('hidden');
-        if (title.timeout) {
-            setTimeout(() => {
-                titleContainer.classList.add('hidden');
-            }, title.timeout * 1000);
-        }
+        icone.src = '/assets/logo.jpg';
+        show(titleContainer); 
+        show(imageContainer);        
 
     }
+
+
+//  #### Incruste ####
+
     socket.on('setIncrust', incrust => {
-        document.querySelector('.incrust-container').classList.remove('hidden');
+        clearscreen();
+        show(document.querySelector('.incrust-container'));
         var incrustImg = document.getElementById('incrust');
         incrustImg.src = incrust.src;
         if (incrust.timeout) {
             setTimeout(() => {
-                clearIncrust();
-            }, incrst.timeout * 1000);
+                clearIncrust();}, incrst.timeout * 1000);
         }
     });
+
     socket.on('clearIncrust', function () {
         clearIncrust();
     });
-    function clearIncrust() {
-        document.querySelector('.incrust-container').classList.add('hidden');
+
+    socket.on('ecranvide', function () {
+        clearscreen();
+    });
+
+
+
+
+	// #### Bandeau Personne ####
+	
+	socket.on('setPersonne', function (data)   {
+		setPersonne(data.title,data.subtitle,data.imageprofil);
+		});
+	
+	function setPersonne(title,subtitle,imageprofil)
+	{
+        title.timeout=1000;
+		var titleContainer = document.getElementById('title');
+        var subtitlecontainer = document.getElementById('subtitle');
+        var icone = document.getElementById('icone');
+		var imageContainer = document.getElementById('imageContainer');
+
+        hidetitle();
+		hidesubtitle();
+        hideicon();        
+
+        // aucun title, on affiche
+        titleContainer.textContent = title;
+        show(titleContainer); 
+		
+        subtitlecontainer.textContent = subtitle;
+        show(subtitlecontainer); 
+		
+		icone.src = imageprofil;
+		show(imageContainer); 
+		
+        if (title.timeout) {
+            setTimeout(() => 
+            {hide(titleContainer);hide(subtitlecontainer);hide(imageContainer);}, title.timeout * 1000);
+        }
+	}
+
+
+
+
+
+//   #### Outils  ####
+
+function hide(obj)
+{
+    obj.classList.add('hidden');
+} 
+function show(obj)
+{
+    obj.classList.remove('hidden');
+} 
+
+function hidetitle()
+{
+    var titleContainer = document.getElementById('title');
+    if (!titleContainer.classList.contains('hidden')) {
+            hide(titleContainer); 
     }
+}
+
+function hidesubtitle()
+{
+    var subtitleContainer = document.getElementById('subtitle');
+    if (!subtitleContainer.classList.contains('hidden')) {
+            hide(subtitleContainer); 
+    }
+}
+
+function hideicon()
+{
+    var iconeContainer = document.getElementById('imageContainer');
+    if (!iconeContainer.classList.contains('hidden')) {
+            hide(iconeContainer); 
+    }
+}
+
+function clearIncrust() {
+        hide(document.querySelector('.incrust-container'));
+}
+
+function clearscreen()
+{
+    hidetitle();hidesubtitle();hideicon();clearIncrust();
+}
+	
+	
 </script>
 
 </html>

@@ -10,7 +10,7 @@
             background-color: rgb(238, 238, 238)
         }
 
-        ol {
+        #app>ol {
             list-style-type: none;
             -webkit-padding-start: 0;
         }
@@ -37,6 +37,7 @@
             overflow-x: auto;
             margin: 0.5em 0;
         }
+
 
         #app>ol>li>div .x {
             /* margin: 0 0.01em; */
@@ -74,6 +75,34 @@
             border: 4px solid #3BF21C;
         }
 
+
+        #listeperso{
+            padding:0;
+            margin:0;
+            white-space:nowrap;
+            list-style-type:none;
+        }
+
+        #perso
+        {
+            border: 1px  red;
+        }
+
+
+        #listeperso li
+        {
+            border: 1px red;
+            float:left;
+            margin-left: 12px; 
+        }
+
+
+        #twitterphoto
+        {
+            height: 70px;   
+            display: flex;       
+        }
+
     </style>
 </head>
 
@@ -95,6 +124,17 @@
             </li>
         </ol>
     </div>
+    <div id="perso" >
+        <ul id="listeperso">          
+            <li v-for="(p, index) in personnes">
+                    <div  v-on:click="sendSetPersonne(p.prenom + ' ' + p.nom , '(' + p.twitter + ')',p.photoprofil[0])">
+                        {{p.nom}}
+                        <img id="twitterphoto" v-bind:src="p.photoprofil">
+                    </div>                
+            </li>         
+        </ul>
+
+    </div>
 </body>
 <script type="text/javascript">
     var socket = io.connect();
@@ -103,12 +143,13 @@
         el: '#app',
         data: {
             episode: { news: [] },
-            displayed: null
+            displayed: null,
         },
         methods: {
             sendSetTitle: function (titre) {
                 socket.emit('setTitle', { text: titre });
             },
+
             clearIncrust: function () {
                 socket.emit('clearIncrust');
 
@@ -124,61 +165,13 @@
                 });
             },
             getEpisode: function () {
-                // /api/emissions/' + emission.value + '/' + episode.value;
                 return this.$http.get('/api/emissions/bits/episodes/59/full').then(response => {
                     this.episode = response.body;
                 });
-                /*
-                    this.episode = {
-                        titre: 'Bits 59',
-                        displayed: null,
-                        news: [
-                            {
-                                titre: 'Hyperloop One le test fonctionnel',
-                                incrusts: [
-                                    '/assets/emissions/bits/59/0.jpg',
-                                    '/assets/emissions/bits/59/1.jpg'
-                                ]
-                            },
-                            {
-                                titre: 'DeepMind sait marcher',
-                                incrusts: [
-                                    '/assets/emissions/bits/59/2.png',
-                                    '/assets/emissions/bits/59/3.gif'
-                                ]
-                            },
-                            {
-                                titre: 'Hyperloop One le test fonctionnel',
-                                incrusts: [
-                                    '/assets/emissions/bits/59/0.jpg',
-                                    '/assets/emissions/bits/59/1.jpg'
-                                ]
-                            },
-                            {
-                                titre: 'DeepMind sait marcher',
-                                incrusts: [
-                                    '/assets/emissions/bits/59/2.png',
-                                    '/assets/emissions/bits/59/3.gif'
-                                ]
-                            },
-                            {
-                                titre: 'Hyperloop One le test fonctionnel',
-                                incrusts: [
-                                    '/assets/emissions/bits/59/0.jpg',
-                                    '/assets/emissions/bits/59/1.jpg'
-                                ]
-                            },
-                            {
-                                titre: 'DeepMind sait marcher',
-                                incrusts: [
-                                    '/assets/emissions/bits/59/2.png',
-                                    '/assets/emissions/bits/59/3.gif'
-                                ]
-                            }
-                        ]
-                    };
-                */
-            }
+			},
+				
+			
+
         },
         watch: {
             displayed: function (val, oldVal) {
@@ -301,36 +294,43 @@
         }
     })
 
-    // function getEpisodeUrl() {
-    //     return '/api/emissions/' + emission.value + '/' + episode.value;
-    // }
 
-    // function loadIncrust() {
+    var perso = new Vue({
 
-    //     var request = new XMLHttpRequest();
-    //     var url = getEpisodeUrl() + '/incrusts';
+        el: '#perso',
+        data: {           
+			personne: null,
+			personnes: []
+        },
 
-    //     uploadForm.action = url;
+        mounted: function () {
+			this.getPersonnes();
+            }
+,
+            methods: {  
+            getPersonnes: function () {
+                return this.$http.get('/api/personnes').then(response => {
+                    this.personnes = response.body;
+                });	               
+            },
 
-    //     request.open('GET', url, true);
+            getPersonnesfull: function () {
+                return this.$http.get('/api/personnes/full').then(response => {
+                    this.personnes = response.body;
+                });	
+               
+            },
+                    
+			sendSetPersonne: function (nom,twitter,logo) {
+                socket.emit('setPersonne', { title: nom,subtitle:twitter,imageprofil: logo });
+            }		
+			
 
-    //     request.onload = function () {
-    //         if (request.status >= 200 && request.status < 400) {
-    //             // Success!
-    //             var data = JSON.parse(request.responseText);
-    //             episode = data;
-    //         } else {
-    //             // We reached our target server, but it returned an error
-    //         }
-    //     };
+        },
 
-    //     request.onerror = function () {
-    //         // There was a connection error of some sort
-    //     };
+    })
 
-    //     request.send();
-    // }
-
+   
 </script>
 
 </html>

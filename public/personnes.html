@@ -1,0 +1,351 @@
+<!doctype html>
+<html>
+
+<head>
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/vue"></script>
+    <script type="text/javascript" src="https://unpkg.com/vue-resource@1.3.4"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.6.0/Sortable.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.14.1/vuedraggable.min.js"></script>
+    <style>
+        html {
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-size: 16px;
+            font-weight: 400;
+            letter-spacing: .04em;
+            line-height: 1;
+            height: 100%;
+            background-color: gray;
+        }
+
+        #app {
+            display: flex;
+            flex-direction: column;
+        }
+
+        nav,
+        main {
+            display: flex;
+            flex-direction: row;
+        }
+
+        ul {
+            list-style-type: none;
+            -webkit-padding-start: 0;
+        }
+
+        main>ul,
+        form {
+            background-color: #fafafa;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+        }
+
+        main li {
+            width: 15em;
+        }
+
+        nav>a:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-top: 1.5em solid transparent;
+            border-bottom: 1.5em solid transparent;
+            border-left: 1em solid #005976;
+            top: .5em;
+            z-index: 1;
+            margin-left: 1em;
+        }
+
+        nav>a:not(:first-child) {
+            padding-left: 2em;
+            margin-left: .2em;
+        }
+
+        nav>a:not(:first-child):before {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-top: 1.5em solid transparent;
+            border-bottom: 1.5em solid transparent;
+            border-left: 1em solid grey;
+            top: .5em;
+            margin-left: -2em;
+        }
+
+        nav>a:hover::after {
+            border-left-color: #ff4200;
+        }
+
+        nav>a,
+        li {
+            display: flex;
+            padding: 1em;
+        }
+
+        nav>a:hover,
+        li.button:hover,
+        li:hover {
+            background-color: #ff4200;
+            color: #fafafa;
+            cursor: pointer;
+        }
+
+        nav>a,
+        li.button {
+            background-color: #005976;
+            color: #fafafa;
+        }
+
+        li.button>i {
+            font-size: 2em;
+            line-height: 50%;
+            margin-right: 0.25em;
+            border-radius: 2px;
+        }
+
+        li.personne.active {
+            background-color: #3BF21C;
+            /* background-color: #005976; */
+            color: #005976;
+            /* color: #ff4200; */
+        }
+
+        form>div {
+            display: flex;
+            flex-direction: column;
+            padding: 0.5em;
+        }
+
+        form {
+            margin: 1em;
+            padding: 1em;
+            flex: 1;
+        }
+
+        form>div>label {
+            padding: 0 0 0.25em 0;
+        }
+
+        textarea {
+            height: 10em;
+        }
+
+        img.icon {
+            width: 1em;
+        }
+
+        .upload-photoprofil {
+            align-items: center;
+            display: flex;
+        }
+
+        .upload-photoprofil>input {
+            flex: 1;
+        }
+
+        .upload-photoprofil>img.icon {
+            margin-left: .5em;
+        }
+
+        .photoprofil-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+
+        .photoprofil-container img {
+            max-height: 100px;
+            margin: .5em;
+            border-radius: 3px;
+        }
+
+        .photoprofil-container img+a {
+            display: none;
+        }
+        /* la croix pour supprimer l'image */
+
+        .photoprofil-container img+a:hover,
+        .photoprofil-container img:hover+a {
+            display: block;
+            position: absolute;
+            background-color: lightgrey;
+            color: #ff4200;
+            margin-left: -1em;
+            margin-top: 1em;
+            padding: 0.5em;
+            cursor: pointer;
+            text-decoration: none;
+            text-shadow: 0 1px 0 #fff;
+            font: 14px/100% arial, sans-serif;
+            font-weight: 900;
+            border-radius: 3px;
+        }
+
+        .photoprofil {
+            display: flex;
+            flex-direction: row-reverse;
+        }
+
+        .slide-left-enter-active,
+        .slide-left-leave-active {
+            transition: transform .5s;
+        }
+
+        .slide-left-enter,
+        .slide-left-leave-to {
+            position: relative;
+            transform: translateX(-17em)
+        }
+
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        
+        <main>
+  
+  
+            <!-- </transition> -->
+            <!-- <transition name="slide-left"> -->
+            <ul v-if="personnes">
+                <draggable v-model="personne" @change="savePersonneOrder">
+                <li v-for="(personne, index) in personnes" v-on:click="selectPersonne(personne)" v-bind:class="[selectedPersonne === personne ? 'active' : '', 'personne']">
+                    <a>{{personne.nom}} {{personne.prenom}}</a>
+                </li>
+				<li class="button" v-on:click="addPersonne()"><i>+</i><span>Ajouter une personne</span></li>
+                </draggable>
+            </ul>
+            <ul v-if="!personnes">
+                    <li class="button" v-on:click="addPersonne()"><i>+</i><span>Ajouter une personne</span></li>
+            </ul>
+            <!-- </transition> -->
+            <form v-if="selectedPersonne" v-on:submit.prevent>
+                    <div>
+                            <label>Id (à masquer)</label>
+                            <input v-model="selectedPersonne._id" v-on:blur="updatePersonne(selectedPersonne)" />
+                        </div>
+
+                <div>
+                    <label>Nom</label>
+                    <input v-model="selectedPersonne.nom" v-on:blur="updatePersonne(selectedPersonne)" />
+                </div>
+                <div>
+                    <label>Prenom</label>
+                    <textarea v-model="selectedPersonne.prenom" v-on:blur="updatePersonne(selectedPersonne)"></textarea>
+                </div>
+                <div>
+                    <label>Twitter</label>
+                    <textarea v-model="selectedPersonne.twitter" v-on:blur="updatePersonne(selectedPersonne)"></textarea>
+                    </div>
+                <div>
+                    <label>photoprofil</label>
+                    <div class="upload-photoprofil"><input v-on:paste="uploadphotoprofil"><img class="icon" src="assets/clippy.svg"></div>
+                    <div class="photoprofil-container">
+                        <div class="photoprofil" v-for="photo in selectedPersonne.photoprofil">
+                            <img v-bind:src="photo">
+                            <a v-on:click="deletephotoprofil(photo)">X</a>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <button v-on:click="updatePersonne(selectedPersonne)">Mettre à jour</button>
+                    <button v-on:click="deletePersonne(selectedPersonne)">Supprimer</button>
+                </div>
+            </form>
+            
+        </main>
+    </div>
+</body>
+<script type="text/javascript">
+    
+    var app = new Vue({
+        el: '#app',
+        data: {	
+            personne:null,	
+            personnes: [],
+            selectedPersonne: null           
+        },
+        methods: {
+            getPersonnes: function () {
+                return this.$http.get('/api/personnes').then(response => {
+                    this.personnes = response.body;
+                });
+            },
+
+           
+            savePersonneOrder: function (event) {
+                if (event.moved != undefined)
+                {
+                    startIndex = event.moved.newIndex > event.moved.oldIndex ? event.moved.oldIndex : event.moved.newIndex;
+                    endIndex = event.moved.newIndex > event.moved.oldIndex ? event.moved.newIndex : event.moved.oldIndex;
+
+                    for (var i = startIndex; i < endIndex + 1; i++)
+                    {
+                        
+                        this.$http
+                            .put(`/api/personnes/${this.selectedPersonne.nom}`, this.personne[i]);
+                    }
+                }
+                
+            },
+            selectPersonne: function (personne) {                
+                this.selectedPersonne = personne;                
+            },
+           
+            addPersonne: function () {
+                return this.$http.post(`/api/personnes/${this.personnes.length + 1}`).then(response => {
+                    this.getPersonnes().then(() => {
+                        this.selectedPersonne(this.personnes[this.personnes.length - 1]);
+                    });
+                });
+            },
+            deletePersonne: function (n) {
+                this.selectedPersonne = null;
+                return this.$http.delete(`/api/personnes/${this.selectedPersonne.nom}`).then(response => {
+                    return this.getPersonnes();
+                });
+            },
+            updatePersonne: function (val) {
+                // TODO gérer le move / réordonnancement...
+                // console.log(`changed ${JSON.stringify(n)}`);
+                return this.$http.put(`/api/personnes/${this.selectedPersonne._id}`, val).then(response => {console.log(response.nom);
+                });
+            },
+            uploadphotoprofil: function (event) {
+                let val = { uri: event.clipboardData.getData('text/plain') };
+                console.log('upload:' + val);
+                return this.$http.post(`/api/personnes/${this.selectedPersonne._id}/photoprofil`, val).then(response => {
+                    let newphotoprofil = response.headers.get('location');
+                    console.log(newphotoprofil);
+                    if (newphotoprofil) {
+                        this.selectedPersonne.photoprofil.push(newphotoprofil);
+                    }
+                    event.target.value = ''; // on vide le input field
+                });
+            },
+            deletephotoprofil: function (photoprofil) {
+                let photoprofilId = photoprofil.split('/').pop(); // en attendant d'avoir un vrai objet photoprofil avec {id, assetUrl}
+                return this.$http.delete(`/api/personnes/${this.selectedPersonne.nom}/photoprofil/${photoprofilId}`).then(response => {
+                    if (response.ok) {
+                        let indexphotoprofilToRemove = this.selectedPersonne.photoprofil.indexOf(photoprofil);
+                        if (indexphotoprofilToRemove !== -1) {
+                            this.selectedPersonne.photoprofil.splice(indexphotoprofilToRemove, 1);
+                        }
+                    }
+                });
+            }
+        },
+        mounted: function () {
+            this.getPersonnes();
+            // document.addEventListener('paste', event => {
+            //     console.log('User performed <b>' + event.type + '</b> operation. Payload is: <b>' + event.clipboardData.getData('text/plain') + '</b>');
+            // });
+        }
+    });
+
+</script>
+
+</html>
