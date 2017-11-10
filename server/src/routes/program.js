@@ -3,13 +3,16 @@ const express = require('express')
 const router = express.Router()
 const logger = require('../logger')
 const Program = require('../models/program')
+const fs = require('fs')
 const path = require('path')
 const multer = require('multer')
 const uuidv4 = require('uuid/v4')
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'data/uploads')
+    const uploadsPath = process.env.DATA_PATH + '/uploads'
+    if (!fs.existsSync(uploadsPath)) fs.mkdirSync(uploadsPath)
+    cb(null, uploadsPath)
   },
   filename: function (req, file, cb) {
     cb(null, path.basename(file.originalname, path.extname(file.originalname)).replace(/\s/g, "_") + '-' + uuidv4() + path.extname(file.originalname))
@@ -161,12 +164,14 @@ router.route('/:programId')
    *         schema:
    *           $ref: '#/definitions/Program'
    */
-  .put(upload.single('thumbnail'), function (req, res, next) {
-    if (req.file) {
-      logger.debug('Receive a file : ')
-      logger.debug(req.file)
-      req.body.thumbnail = '/' + req.file.path
-    }
+  .put(upload.fields([
+    { name: 'thumbnail', maxCount: 1 },
+    { name: 'logo', maxCount: 1 },
+    { name: 'logoBW', maxCount: 1 }
+  ]), function (req, res, next) {
+    if (req.files['thumbnail']) req.body.thumbnail = '/' + req.files['thumbnail'][0].path
+    if (req.files['logo']) req.body.logo = '/' + req.files['logo'][0].path
+    if (req.files['logoBW']) req.body.logoBW = '/' + req.files['logoBW'][0].path
 
     req.program = Object.assign(req.program, req.body, {modified: Date.now()})
     req.program

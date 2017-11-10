@@ -11,15 +11,15 @@
         </h2>
       </header>
       <section id="my-mdc-dialog-description" class="mdc-dialog__body mdc-dialog__body--scrollable">
-        <div class="mdc-textfield mdc-textfield--fullwidth mdc-textfield--with-trailing-icon" v-bind:class="{ 'mdc-textfield--upgraded' : episode.name }">
-          <i class="material-icons mdc-textfield__icon" tabindex="0">label</i>
-          <input type="text" id="name" class="mdc-textfield__input" :value="episode.name" v-model.lazy="episode.name">
-          <label for="name" class="mdc-textfield__label" v-bind:class="{ 'mdc-textfield__label--float-above' : episode.name }">Name</label>
+        <div class="mdc-text-field mdc-text-field--fullwidth mdc-text-field--with-trailing-icon" v-bind:class="{ 'mdc-text-field--upgraded' : episode.name }">
+          <i class="material-icons mdc-text-field__icon" tabindex="0">label</i>
+          <input type="text" id="name" class="mdc-text-field__input" :value="episode.name" v-model.lazy="episode.name">
+          <label for="name" class="mdc-text-field__label" v-bind:class="{ 'mdc-text-field__label--float-above' : episode.name }">Name</label>
         </div>
-        <div class="mdc-textfield mdc-textfield--fullwidth mdc-textfield--with-trailing-icon" v-bind:class="{ 'mdc-textfield--upgraded' : episode.number }">
-          <i class="material-icons mdc-textfield__icon" tabindex="0">format_list_numbered</i>
-          <input type="text" id="number" class="mdc-textfield__input" :value="episode.number" v-model.lazy="episode.number" pattern="[0-9]+">
-          <label for="number" class="mdc-textfield__label" v-bind:class="{ 'mdc-textfield__label--float-above' : episode.number }">Number</label>
+        <div class="mdc-text-field mdc-text-field--fullwidth mdc-text-field--with-trailing-icon" v-bind:class="{ 'mdc-text-field--upgraded' : episode.number }">
+          <i class="material-icons mdc-text-field__icon" tabindex="0">format_list_numbered</i>
+          <input type="text" id="number" class="mdc-text-field__input" :value="episode.number" v-model.lazy="episode.number" pattern="[0-9]+">
+          <label for="number" class="mdc-text-field__label" v-bind:class="{ 'mdc-text-field__label--float-above' : episode.number }">Number</label>
         </div>
       </section>
       <footer class="mdc-dialog__footer">
@@ -39,7 +39,7 @@
 
 <script>
 import Event from '../../utils/EventBus.js'
-import { dialog, textfield } from 'material-components-web'
+import { dialog, textField } from 'material-components-web'
 import assign from 'object-assign'
 
 export default {
@@ -52,7 +52,7 @@ export default {
   },
   mounted () {
     this.dialog = new dialog.MDCDialog(this.$el)
-    textfield.MDCTextfield.attachTo(this.$el.querySelector('.mdc-textfield'))
+    textField.MDCTextField.attachTo(this.$el.querySelector('.mdc-text-field'))
     Event.$on('episodeDialog.show', this.show)
     Event.$on('episodeDialog.close', this.close)
   },
@@ -80,7 +80,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.mdc-textfield--textarea {
+.mdc-text-field--textarea {
   margin-top: 16px;
 }
 
@@ -112,8 +112,8 @@ export default {
   z-index: 3;
 }
 
-/* fix mdc-textfield--fullwidth padding */
-.mdc-textfield--fullwidth:not(.mdc-textfield--textarea) .mdc-textfield__input {
+/* fix mdc-text-field--fullwidth padding */
+.mdc-text-field--fullwidth:not(.mdc-text-field--textarea) .mdc-text-field__input {
   padding: 10px 0;
 }
 

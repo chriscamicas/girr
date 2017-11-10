@@ -1,46 +1,51 @@
 <template>
-  <div>
+  <div class="episode">
+    <EpisodeDialog></EpisodeDialog>
     <Toolbar :title="episode.name">
       <section class="mdc-toolbar__section mdc-toolbar__section--align-end" slot="headerActions">
-        <button class="material-icons mdc-toolbar__icon mdc-ripple-surface" arial-label="Edit" v-on:click="editEpisode">edit</button>
-        <time v-if="episode.started" v-bind:class="{ 'mdc-theme--secondary' : episode.started && !episode.ended }">{{ timePlayed | formatTime }}</time>
-        <button v-if="episode.started && !episode.ended" class="material-icons mdc-toolbar__icon mdc-ripple-surface" arial-label="Stop" v-on:click="stopEpisode(episode)">stop</button>
-        <button v-else class="material-icons mdc-toolbar__icon mdc-ripple-surface" arial-label="Playing" v-on:click="startEpisode(episode)">play_arrow</button>
+        <time v-if="episode.started" >{{ timePlayed | formatTime }}</time>
+        <button class="material-icons mdc-toolbar__icon mdc-ripple-surface toggle-menu" arial-label="Menu" data-mdc-auto-init="MDCRipple">more_vert</button>
+        <div class="mdc-simple-menu mdc-simple-menu--open-from-top-right" tabindex="-1">
+          <ul class="mdc-simple-menu__items mdc-list" role="menu" aria-hidden="true">
+            <li class="mdc-list-item" role="menuitem" tabindex="0" v-on:click="editEpisode">Edit</li>
+            <li class="mdc-list-item" role="menuitem" tabindex="0" v-on:click="stopEpisode(episode)" v-if="episode.started && !episode.ended">Stop</li>
+            <li class="mdc-list-item" role="menuitem" tabindex="0" v-on:click="startEpisode(episode)" v-else>Start</li>
+          </ul>
+        </div>
       </section>
     </Toolbar>
     <main class="mdc-toolbar-fixed-adjust" :class="{ empty: topics.length == 0 }">
-      <EpisodeDialog></EpisodeDialog>
-      <div class="episode">
-        <TopicDialog></TopicDialog>
-        <draggable
-          v-if="topics.length > 0"
-          element="ul"
-          v-model="topics"
-          :options="dragOptions"
-          @change="itemMoved"
-          class="topics mdc-list mdc-list--avatar-list mdc-list--two-line">
-          <transition-group name="fade">
-            <TopicCard v-for="topic in topics" :key="topic._id" :topic="topic" ></TopicCard>
-          </transition-group>
-        </draggable>
-        <EmptyState v-else></EmptyState>
-        <button class="mdc-fab material-icons fab" aria-label="add" data-mdc-auto-init="MDCRipple" v-on:click="addTopic">
-          <span class="mdc-fab__icon">
-            add
-          </span>
-        </button>
-      </div>
+      <TopicDialog></TopicDialog>
+      <draggable
+        v-if="topics.length > 0"
+        element="ul"
+        v-model="topics"
+        :options="dragOptions"
+        @change="itemMoved"
+        class="topics mdc-list mdc-list--avatar-list mdc-list--two-line">
+        <transition-group name="fade">
+          <TopicCard v-for="topic in topics" :key="topic._id" :topic="topic" ></TopicCard>
+        </transition-group>
+      </draggable>
+      <EmptyState v-else></EmptyState>
     </main>
+    <button class="mdc-fab material-icons fab" aria-label="add" data-mdc-auto-init="MDCRipple" v-on:click="addTopic">
+      <span class="mdc-fab__icon">
+        add
+      </span>
+    </button>
   </div>
 </template>
 
 <script>
 import Event from '../../utils/EventBus.js'
+import { menu } from 'material-components-web'
 import EpisodeDialog from './EpisodeDialog'
 import draggable from 'vuedraggable'
 import TopicCard from '../Topic/TopicCard'
 import TopicDialog from '../Topic/TopicDialog'
 import Toolbar from '../Toolbar'
+import Bottombar from '../Bottombar'
 import EmptyState from '../EmptyState'
 
 export default {
@@ -51,6 +56,7 @@ export default {
     TopicCard,
     TopicDialog,
     Toolbar,
+    Bottombar,
     EmptyState
   },
   computed: {
@@ -60,6 +66,11 @@ export default {
         handle: '.mdc-list-item__start-detail',
         delay: 0
       }
+    },
+    playingTopic () {
+      return this.topics.find(function (episodeTopic) {
+        return episodeTopic.started && !episodeTopic.ended
+      })
     }
   },
   data () {
@@ -109,6 +120,14 @@ export default {
       if (index > -1) this.topics.splice(index, 1)
     })
   },
+  mounted () {
+    this.menu = new menu.MDCSimpleMenu(this.$el.querySelector('.mdc-toolbar__section .mdc-simple-menu'))
+    // Add event listener to some button to toggle the menu on and off.
+    this.$el.querySelector('.mdc-toolbar__section  .toggle-menu').addEventListener('click', (event) => {
+      event.preventDefault()
+      this.menu.open = !this.menu.open
+    })
+  },
   watch: {
     '$route': 'fetchData',
     'episode.started' (value) {
@@ -140,8 +159,7 @@ export default {
         },
         function (response) {
           Event.$emit('progressbar.toggle', false)
-          console.error(response)
-          Event.$emit('snackbar.message', `Error : ${response.statusText ? response.statusText : 'no connection'}`)
+          Event.$emit('http.error', response)
         }
       )
     },
@@ -158,8 +176,7 @@ export default {
         },
         function (response) {
           Event.$emit('progressbar.toggle', false)
-          console.error(response)
-          Event.$emit('snackbar.message', `Error : ${response.statusText ? response.statusText : 'no connection'}`)
+          Event.$emit('http.error', response)
         }
       )
     },
@@ -173,8 +190,7 @@ export default {
         },
         function (response) {
           Event.$emit('progressbar.toggle', false)
-          console.error(response)
-          Event.$emit('snackbar.message', `Error : ${response.statusText ? response.statusText : 'no connection'}`)
+          Event.$emit('http.error', response)
         }
       )
     },
@@ -188,8 +204,7 @@ export default {
         },
         function (response) {
           Event.$emit('progressbar.toggle', false)
-          console.error(response)
-          Event.$emit('snackbar.message', `Error : ${response.statusText ? response.statusText : 'no connection'}`)
+          Event.$emit('http.error', response)
         }
       )
     },
@@ -203,8 +218,7 @@ export default {
         },
         function (response) {
           Event.$emit('progressbar.toggle', false)
-          console.error(response)
-          Event.$emit('snackbar.message', `Error : ${response.statusText ? response.statusText : 'no connection'}`)
+          Event.$emit('http.error', response)
         }
       )
     },
@@ -217,8 +231,7 @@ export default {
         },
         function (response) {
           Event.$emit('progressbar.toggle', false)
-          console.error(response)
-          Event.$emit('snackbar.message', `Error : ${response.statusText ? response.statusText : 'no connection'}`)
+          Event.$emit('http.error', response)
         }
       )
     },
@@ -232,8 +245,7 @@ export default {
         },
         function (response) {
           Event.$emit('progressbar.toggle', false)
-          console.error(response)
-          Event.$emit('snackbar.message', `Error : ${response.statusText ? response.statusText : 'no connection'}`)
+          Event.$emit('http.error', response)
         }
       )
     },
@@ -251,8 +263,7 @@ export default {
         },
         function (response) {
           Event.$emit('progressbar.toggle', false)
-          console.error(response)
-          Event.$emit('snackbar.message', `Error : ${response.statusText ? response.statusText : 'no connection'}`)
+          Event.$emit('http.error', response)
         }
       )
     },
@@ -267,7 +278,6 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-
 .topics {
   max-width: 1024px;
   margin: 0 auto;
@@ -284,7 +294,6 @@ export default {
   position: fixed;
   bottom: 1rem;
   right: 1rem;
-  z-index: 1; /* to be above the snackbar */
 }
 
 @media(min-width: 1024px) {

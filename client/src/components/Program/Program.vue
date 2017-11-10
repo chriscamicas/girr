@@ -114,8 +114,7 @@ export default {
         },
         function (response) {
           Event.$emit('progressbar.toggle', false)
-          console.error(response)
-          Event.$emit('snackbar.message', `Error : ${response.statusText ? response.statusText : 'no connection'}`)
+          Event.$emit('http.error', response)
         }
       )
     },
@@ -137,8 +136,7 @@ export default {
         },
         function (response) {
           Event.$emit('progressbar.toggle', false)
-          console.error(response)
-          Event.$emit('snackbar.message', `Error : ${response.statusText ? response.statusText : 'no connection'}`)
+          Event.$emit('http.error', response)
         }
       )
     },
@@ -152,8 +150,7 @@ export default {
         },
         function (response) {
           Event.$emit('progressbar.toggle', false)
-          console.error(response)
-          Event.$emit('snackbar.message', `Error : ${response.statusText ? response.statusText : 'no connection'}`)
+          Event.$emit('http.error', response)
         }
       )
     },
@@ -166,8 +163,7 @@ export default {
         },
         function (response) {
           Event.$emit('progressbar.toggle', false)
-          console.error(response)
-          Event.$emit('snackbar.message', `Error : ${response.statusText ? response.statusText : 'no connection'}`)
+          Event.$emit('http.error', response)
         }
       )
     },
@@ -181,8 +177,7 @@ export default {
         },
         function (response) {
           Event.$emit('progressbar.toggle', false)
-          console.error(response)
-          Event.$emit('snackbar.message', `Error : ${response.statusText ? response.statusText : 'no connection'}`)
+          Event.$emit('http.error', response)
         }
       )
     },
@@ -207,6 +202,10 @@ export default {
 
 main.empty .empty-state {
   max-height: calc(100vh - (5 * 72px)); /* --mdc-toolbar-ratio-to-extend-flexible * 72px */
+}
+
+#app.bottombarActive main.empty .empty-state {
+  max-height: calc(100vh - (5 * 72px) - 56px); /* --mdc-toolbar-ratio-to-extend-flexible * 72px */
 }
 
 @media (max-width: 1280px) {
@@ -243,7 +242,6 @@ a.episode-card {
   position: fixed;
   bottom: 1rem;
   right: 1rem;
-  z-index: 1; /* to be above the snackbar */
 }
 
 @media(min-width: 1024px) {

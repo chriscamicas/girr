@@ -87,8 +87,7 @@ export default {
         },
         function (response) {
           Event.$emit('progressbar.toggle', false)
-          console.error(response)
-          Event.$emit('snackbar.message', `Error : ${response.statusText ? response.statusText : 'no connection'}`)
+          Event.$emit('http.error', response)
         }
       )
     },
@@ -102,8 +101,7 @@ export default {
         },
         function (response) {
           Event.$emit('progressbar.toggle', false)
-          console.error(response)
-          Event.$emit('snackbar.message', `Error : ${response.statusText ? response.statusText : 'no connection'}`)
+          Event.$emit('http.error', response)
         }
       )
     }
@@ -152,7 +150,6 @@ a {
   position: fixed;
   bottom: 1rem;
   right: 1rem;
-  z-index: 1; /* to be above the snackbar */
 }
 
 @media(min-width: 1024px) {

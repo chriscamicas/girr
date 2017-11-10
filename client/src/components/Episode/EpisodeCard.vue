@@ -57,8 +57,7 @@ export default {
         },
         function (response) {
           Event.$emit('progressbar.toggle', false)
-          console.error(response)
-          Event.$emit('snackbar.message', `Error : ${response.statusText ? response.statusText : 'no connection'}`)
+          Event.$emit('http.error', response)
         }
       )
     },
@@ -72,8 +71,7 @@ export default {
         },
         function (response) {
           Event.$emit('progressbar.toggle', false)
-          console.error(response)
-          Event.$emit('snackbar.message', `Error : ${response.statusText ? response.statusText : 'no connection'}`)
+          Event.$emit('http.error', response)
         }
       )
     }

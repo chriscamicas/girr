@@ -2,8 +2,9 @@
   <main class="xsplit" :style="{ 'background-image': background }">
     <div class="title">{{ animatedTitle }}</div>
     <div class="content">
-      <img v-if="xsplit.picture" :src="xsplit.picture" v-bind:class="{ loading: xsplit.picture }" v-on:load="loaded($event)" v-on:error="failed($event)">
+      <img v-if="xsplit.picture" :src="xsplit.picture" :class="{ loading: xsplit.picture }" v-on:load="loaded($event)" v-on:error="failed($event)">
    	</div>
+    <img class="logo" v-if="logo" :src="logo">
   </main>
 </template>
 
@@ -24,6 +25,7 @@ export default {
     this.$options.sockets['xsplit'] = (data) => {
       this.xsplit = data
     }
+    document.title = 'GIRR'
   },
   watch: {
     'xsplit.title' (newValue, oldValue) {
@@ -73,6 +75,9 @@ export default {
         return 'url(' + (this.xsplit.background ? this.xsplit.background : require('../assets/brick-wall.jpg')) + ')'
       }
       return null
+    },
+    logo () {
+      return this.xsplit.logo ? this.xsplit.logo + '?height=72' : null
     }
   },
   methods: {
@@ -105,6 +110,10 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.main-content {
+  background-color: transparent;
+}
+
 .xsplit {
 	display: flex;
 	flex-flow: column-reverse;
@@ -119,7 +128,6 @@ export default {
   align-self: flex-start; /* sized to content */
   flex: 1 0 auto; /* grow to content */
   margin: 0.5em 1em;
-  padding: 0em 0.3em;
   max-width: calc(100% - 2em - 400px); /* je ne sais pas quelle taille fait exactement le twitch chat donc j'ai mis 400px à l'arrache */
   font-family: 'Oswald', sans-serif;
   font-weight: 400;
@@ -130,6 +138,10 @@ export default {
   overflow: hidden;
   box-sizing: border-box;
   background-color: white;
+}
+
+.xsplit .title:not(:empty) {
+  padding: 10px;
 }
 
 @media (min-width: 481px) and (max-width: 840px) {
@@ -146,17 +158,13 @@ export default {
   }
 }
 
-.xsplit .title {
-  /* en mode apparition, on veut que le texte apparaisse vers la fin de l'animation */
-  transition: transform 1s, color 2s ease-in-out;
-  transform-origin: left;
-}
-
-.xsplit .title.hidden {
-  /* en mode disparition, on veut que le texte disparaisse plus tôt pour éviter l'écrasement */
-  transition: transform 1s, color 0.5s ease-in-out;
-  transform : scaleX(0);
-  color: white;
+.xsplit .logo {
+  position: absolute;
+  top: 0;
+  right: 0;
+  max-height: 72px;
+  max-width: 72px;
+  margin: 12px;
 }
 
 .xsplit .content {
@@ -165,6 +173,7 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  margin-top: 1.5em;
 }
 
 .xsplit .content img {

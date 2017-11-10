@@ -14,7 +14,7 @@ const mime = require('mime')
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    let uploadsPath = process.env.DATA_PATH + '/uploads'
+    const uploadsPath = process.env.DATA_PATH + '/uploads'
     if (!fs.existsSync(uploadsPath)) fs.mkdirSync(uploadsPath)
     cb(null, uploadsPath)
   },
@@ -396,7 +396,6 @@ router.route('/:mediaId')
  *           $ref: '#/definitions/Media'
  */
 router.get('/:mediaId/start', function (req, res, next) {
-  let xsplit = new XSplit()
   req.media.started = Date.now()
   req.media
       .save()
@@ -404,29 +403,35 @@ router.get('/:mediaId/start', function (req, res, next) {
         logger.debug("Started " + media.toString())
         res.json(media)
 
-        xsplit.picture = req.media.uri
+        let xsplit = new XSplit()
+        xsplit.media = media
+        xsplit.picture = media.uri
+
+        // we start the parent Topic if it isn't already
+        if (!(req.topic.started && !req.topic.ended)) {
+          req.topic.started = Date.now()
+          req.topic.ended = null
+          req.topic.save()
+
+          xsplit.topic = req.topic
+          xsplit.title = req.topic.title
+        }
+
+        // we start the parent Episode if it isn't already
+        if (!(req.episode.started && !req.episode.ended)) {
+          req.episode.started = Date.now()
+          req.episode.ended = null
+          req.episode.save()
+
+          xsplit.episode = req.episode
+          xsplit.logo = req.program.logoBW
+        }
+
         xsplit.save()
       })
       .catch(function(error) {
         next(error)
       })
-
-  // we start the parent Topic if it isn't already
-  if (!(req.topic.started && !req.topic.ended)) {
-    req.topic.started = Date.now()
-    req.topic.ended = null
-    req.topic.save()
-
-    xsplit.title = req.topic.title
-    xsplit.save()
-  }
-
-  // we start the parent Episode if it isn't already
-  if (!(req.episode.started && !req.episode.ended)) {
-    req.episode.started = Date.now()
-    req.episode.ended = null
-    req.episode.save()
-  }
 })
 
 /**
@@ -472,6 +477,7 @@ router.get('/:mediaId/stop', function (req, res, next) {
       .then(function(media) {
         logger.debug("Stopped " + media.toString())
         var xsplit = new XSplit()
+        xsplit.media = null
         xsplit.picture = null
         xsplit.save()
         res.json(media)

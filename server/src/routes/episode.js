@@ -307,8 +307,12 @@ router.get('/:episodeId/start', function (req, res, next) {
         res.json(episode)
 
         let xsplit = new XSplit()
+        xsplit.episode = req.episode
         xsplit.title = episode.name
+        xsplit.topic = null
+        xsplit.media = null
         xsplit.picture = null
+        xsplit.logo = req.program.logoBW
         xsplit.save()
       })
       .catch(function(error) {
@@ -338,7 +342,7 @@ router.get('/:episodeId/start', function (req, res, next) {
  *         type: uuid
  *     responses:
  *       200:
- *         description: Episode stooped
+ *         description: Episode stopped
  *         schema:
  *           $ref: '#/definitions/Episode'
  */
@@ -379,8 +383,12 @@ router.get('/:episodeId/stop', function (req, res, next) {
           res.json(episode)
 
           let xsplit = new XSplit()
+          xsplit.episode = null
+          xsplit.topic = null
+          xsplit.media = null
           xsplit.title = null
           xsplit.picture = null
+          xsplit.logo = null
           xsplit.save()
         })
         .catch(function(error) {
@@ -391,36 +399,79 @@ router.get('/:episodeId/stop', function (req, res, next) {
   }
 })
 
-/* legacy endpoint */
-router.get('/:episode/full', (req, res) => {
-    "use strict";
-    // this.episode = {
-    //     title: 'Bits 59',
-    //     displayed: null,
-    //     news: [
-    //         {
-    //             title: 'Hyperloop One le test fonctionnel',
-    //             incrusts: [
-    //                 '/assets/programs/bits/59/0.jpg',
-    //                 '/assets/programs/bits/59/1.jpg'
-    //             ]
-    //         },
+/**
+ * @swagger
+ * /programs/{programId}/episodes/{episodeId}/next:
+ *   get:
+ *     tags:
+ *       - Episodes
+ *     description: > 
+ *       Find the current playing Topic and start its next sibling.
+ *       If there is no playing Topic, start the first.
+ *       If it is already the last, send an error.
+ *     summary: Start the next Episode's topic
+ *     produces: application/json
+ *     parameters:
+ *       - name: programId
+ *         description: Program's id
+ *         in: path
+ *         required: true
+ *         type: uuid
+ *       - name: episodeId
+ *         description: Episode's id
+ *         in: path
+ *         required: true
+ *         type: uuid
+ *     responses:
+ *       200:
+ *         description: Topic started
+ *         schema:
+ *           $ref: '#/definitions/Topic'
+ */
+router.get('/:episodeId/next', function (req, res, next) {
+  if (req.episode.started && !req.episode.ended) {
+    Topic
+        .find({ episode: req.episode._id })
+        .sort({ 'position': 1 })
+        .then(function(topics) {
+          let nextTopic = topics[0]
+          for (let i = 0; i < topics.length; i++) {
+            if (topics[i].started && !topics[i].ended) {
+              if (++i < topics.length) {
+                nextTopic = topics[i]
+                break
+              } else {
+                next({message: "Episode " + req.params.episodeId + " is at its end", status: 400})
+                return
+              }
+            }
+          }
+          nextTopic.started = Date.now()
+          nextTopic.ended = null
+          nextTopic
+            .save()
+            .then(function(topicStarted) {
+              logger.debug("Started " + topicStarted.toString())
+              res.json(topicStarted)
 
-    Topic.find({
-        episode: req.episode._id
-    }, { '_id': 0, 'number': 1, 'title': 1, 'notes': 1, 'medias': 1 }, { 'sort': { 'number': 1 } }).lean().exec((err, news) => {
-        let nameCapitalFirst = req.program.name.charAt(0).toUpperCase() + req.program.name.slice(1);
-        let episodeFull = {
-            titre: `${nameCapitalFirst} ${req.episode.number}`,
-            news: news
-        };
-        let baseUrl = req.originalUrl.replace('full', '');
-        episodeFull.news.forEach(n => {
-            n.incrusts = n.incrusts.map(incrust => path.join(baseUrl, 'news', n.number.toString(), 'incrusts', incrust.toString()));
-        });
-        res.send(episodeFull);
-    });
-});
+              let xsplit = new XSplit()
+              xsplit.topic = topicStarted
+              xsplit.media = null
+              xsplit.title = topicStarted.title
+              xsplit.picture = null
+              xsplit.save()
+            })
+            .catch(function(error) {
+              next(error)
+            })
+        })
+        .catch(function(error) {
+          next(error)
+        })
+  } else {
+    next({message:"Episode " + req.params.episodeId + " isn't playing", status: 417})
+  }
+})
 
 router.use('/:episodeId/topics', require('./topic'));
 

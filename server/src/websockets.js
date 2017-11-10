@@ -4,7 +4,9 @@ const io = require('socket.io')
 const logger = require('./logger')
 const CircularJSON = require('circular-json')
 
-/** Class representing a WebSockets Server */
+/** 
+ * Class representing a WebSockets Server
+ */
 function WebSockets() {
   if (!this.instance) {
     logger.info('Initiating the Websockets Server...')

@@ -1,7 +1,7 @@
 <template>
   <li class="mdc-grid-tile" :class="{ playing : media.started && !media.ended }" v-on:click="toggleMedia(media)">
     <div class="mdc-grid-tile__primary">
-      <img class="mdc-grid-tile__primary-content" :src="media.uri" />
+      <img class="mdc-grid-tile__primary-content" :src="this.media.uri ? this.media.uri + '?height=256' : null" />
     </div>
     <span v-if="media.started && !media.ended" class="mdc-grid-tile__secondary">
       <span class="mdc-grid-tile__title">{{ timePlayed | formatTime }}</span>
@@ -58,8 +58,7 @@ export default {
         },
         function (response) {
           Event.$emit('progressbar.toggle', false)
-          console.error(response)
-          Event.$emit('snackbar.message', `Error : ${response.statusText ? response.statusText : 'no connection'}`)
+          Event.$emit('http.error', response)
         }
       )
     },
@@ -73,8 +72,7 @@ export default {
         },
         function (response) {
           Event.$emit('progressbar.toggle', false)
-          console.error(response)
-          Event.$emit('snackbar.message', `Error : ${response.statusText ? response.statusText : 'no connection'}`)
+          Event.$emit('http.error', response)
         }
       )
     },

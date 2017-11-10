@@ -1,4 +1,4 @@
-"use strict"; // https://stackoverflow.com/a/33001437
+"use strict" // https://stackoverflow.com/a/33001437
 // set all config variables as env variables
 require('dotenv-extended').load({
     path: __dirname + '/config/.env',
@@ -7,22 +7,22 @@ require('dotenv-extended').load({
     errorOnExtra: false,
     assignToProcessEnv: true,
     overrideProcessEnv: false
-});
+})
 
-const express = require('express');
-const bodyParser = require('body-parser');
-const app = express();
+const express = require('express')
+const bodyParser = require('body-parser')
+const app = express()
 const io = require("./src/websockets")()
-const mongoose = require('mongoose');
-const basicAuth = require('express-basic-auth');
-const logger = require("./src/logger");
+const mongoose = require('mongoose')
+const basicAuth = require('express-basic-auth')
+const logger = require("./src/logger")
 const path = require('path')
 const fs = require('fs')
 
 // to retrieve the absolute project path without doing some magic (ie. '../../..')
-global.__base = __dirname + '/';
+global.__base = __dirname + '/'
 
-let password = process.env.GIRR_PASSWORD;
+let password = process.env.GIRR_PASSWORD
 if(password) {
   app.use(basicAuth({
     users: { girr: password },
@@ -48,27 +48,11 @@ app.use(bodyParser.urlencoded({ extended: false }))
     req.url,
     Object.keys(req.body).length ? JSON.stringify(req.body) : ''
   )
-  res.header("Access-Control-Allow-Origin", "*")
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
   next() // make sure we go to the next routes and don't stop here
 })
-// Indique que le dossier /dist contient des fichiers statiques (middleware chargé de base)
 .use(express.static('./dist'))
-.use('/data', express.static(process.env.DATA_PATH))
- // swagger.json
-.use('/', require('./src/swagger'))
- // swagger UI
-.get('/api', function (req, res) {
-  res.sendFile(path.resolve('public/swagger/index.html'))
-  app.use('/', express.static('public/swagger'))
-})
-.use('/api/programs', require('./src/routes/program.js'))
-.use('/api/xsplit', require('./src/routes/xsplit.js'))
-// error middleware
-.use((err, req, res, next) => {
-  logger.error(err);
-  res.status(err.status ? err.status : 500).send(err);
-});
+.use('/data', require('./src/routes/data.js'))
+.use('/api', require('./src/routes'))
 
 mongoose.Promise = Promise;
 mongoose.connect(process.env.MONGO_ENDPOINT, { useMongoClient: true })
@@ -78,5 +62,5 @@ mongoose.connection.on('open', () => {
     app.listen(process.env.PORT, () => {
       console.log(`Server started at http://localhost:${process.env.PORT}/`);
     })
-  );
-});
+  )
+})

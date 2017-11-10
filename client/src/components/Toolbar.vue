@@ -2,7 +2,7 @@
   <header class="mdc-toolbar mdc-toolbar--fixed mdc-toolbar--waterfall">
     <div class="mdc-toolbar__row">
       <section class="mdc-toolbar__section mdc-toolbar__section--align-start">
-        <a class="material-icons mdc-toolbar__icon--menu mdc-ripple-surface menu" aria-label="Menu" alt="Menu" data-mdc-auto-init="MDCRipple">menu</a>
+        <a class="material-icons mdc-toolbar__menu-icon mdc-ripple-surface menu" aria-label="Menu" alt="Menu" data-mdc-auto-init="MDCRipple">menu</a>
         <span class="mdc-toolbar__title">{{ title }}</span>
       </section>
       <slot name="headerActions"></slot>
@@ -48,6 +48,7 @@ export default {
         this.$el.querySelector('.mdc-toolbar__row:first-child').classList.remove('flex')
       }
     })
+    document.title = `${this.title} - GIRR`
   },
   watch: {
     title: function (newTitle) {

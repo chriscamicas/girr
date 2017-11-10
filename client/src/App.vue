@@ -1,21 +1,57 @@
 <template>
-  <div id="app">
-    <router-view></router-view>
+  <div id="app" :class="{ bottombarActive : bottombarShown }">
+    <router-view class="main-content"></router-view>
+    <transition name="slide">
+      <Bottombar v-show="bottombarShown" style="position: fixed; bottom: 0;"></Bottombar>
+    </transition>
     <Snackbar></Snackbar>
   </div>
 </template>
 
 <script>
+import Event from './utils/EventBus.js'
 import Snackbar from './components/Snackbar'
+import Bottombar from './components/Bottombar'
 import { autoInit } from 'material-components-web'
 
 export default {
   name: 'app',
-  components: { Snackbar },
+  components: { Snackbar, Bottombar },
   data () {
     return {
-      title: 'GeekInc Remote Regie'
+      title: 'GeekInc Remote Regie',
+      bottombar: false
     }
+  },
+  watch: {
+    'episode.started' (value) {
+      if (value !== null && this.episode.ended === null) {
+        this.timePlayedHandler = window.setInterval(() => {
+          this.timePlayed = !this.episode.started ? 0 : (this.episode.ended ? new Date(this.episode.ended).getTime() : new Date().getTime()) - new Date(this.episode.started).getTime()
+        }, 1000)
+      }
+      this.timePlayed = !this.episode.started ? 0 : (this.episode.ended ? new Date(this.episode.ended).getTime() : new Date().getTime()) - new Date(this.episode.started).getTime()
+    },
+    'episode.ended' (value) {
+      if (value !== null && this.episode.started !== null) {
+        window.clearInterval(this.timePlayedHandler)
+      }
+    }
+  },
+  computed: {
+    bottombarShown () {
+      return this.bottombar && this.$route.fullPath.indexOf('xsplit') < 0
+    }
+  },
+  created () {
+    Event.$on('bottombar.toggle', (boolean) => {
+      this.bottombar = boolean
+    })
+    Event.$on('http.error', (response) => {
+      let message = response.body.message ? response.body.message : `Error : ${response.statusText ? response.statusText : 'no connection'}`
+      console.error(response)
+      Event.$emit('snackbar.message', message)
+    })
   },
   mounted: function () {
     autoInit() // autoInit MDC
@@ -31,7 +67,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 #app {
   font-family: Roboto,sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -39,8 +75,45 @@ export default {
   color: #2c3e50;
 }
 
+.main-content {
+  background-color: white;
+}
+
+.main-content,
+.main-content >>> .fab {
+  -webkit-transition: margin-bottom 0.5s; /* Safari */
+  transition: margin-bottom 0.5s;
+}
+
+#app.bottombarActive .main-content,
+#app.bottombarActive .main-content >>> .fab {
+  margin-bottom: 56px;
+}
+
+#app.bottombarActive .mdc-snackbar--active {
+  bottom: 70px;
+  z-index: 1;
+}
+
+.slide-enter-active, .slide-leave-active {
+  transition: transform 0.5s
+}
+.slide-enter, .slide-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  transform: translateY(100%);
+}
+</style>
+
+<style>
 body {
   margin: 0;
+}
+
+.unselectable {
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 </style>
 
@@ -62,7 +135,6 @@ body {
 .mdc-badge {
   position: relative;
   white-space: nowrap;
-  margin-right: 24px;
 }
 
 .mdc-badge[data-badge]::after {

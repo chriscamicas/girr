@@ -2,7 +2,7 @@
   <div class="program mdc-card mdc-card--theme-dark " :style="{ 'background-image': program.thumbnail ? 'url(' + program.thumbnail + ')' : null }">
     <section class="mdc-card__primary mdc-menu-anchor">
       <h1 class="mdc-card__title mdc-card__title--large">{{ program.name }}</h1>
-      <h2 class="mdc-card__subtitle">Added {{ program.created | formatDate }}</h2>
+      <h2 class="mdc-card__subtitle">{{ program.episodes.length }} Episode{{ program.episodes.length != 1 ? 's' : ''}}</h2>
       <i class="mdc-icon-toggle material-icons toggle-menu" arial-label="Menu">more_vert</i>
       <div class="mdc-simple-menu mdc-simple-menu--open-from-bottom-right" tabindex="-1">
         <ul class="mdc-simple-menu__items mdc-list" role="menu" aria-hidden="true">
@@ -26,12 +26,6 @@ export default {
     this.$options.sockets[`programs.${this.program._id}`] = function (data) {
       Event.$emit('program.updated', data)
     }
-    Event.$on('program.update', (program, file) => {
-      if (program._id === this.program._id) this.updateProgram(program, file)
-    })
-    Event.$on('program.delete', (program) => {
-      if (program._id === this.program._id) this.deleteProgram(program)
-    })
   },
   mounted () {
     this.menu = new menu.MDCSimpleMenu(this.$el.querySelector('.mdc-simple-menu'))
@@ -46,46 +40,6 @@ export default {
       event.preventDefault()
       event.stopPropagation()
       Event.$emit('programDialog.show', this.program)
-    },
-    updateProgram: function (program, file) {
-      let data = program
-      if (typeof file !== 'undefined') {
-        data = new FormData()
-        data.append('thumbnail', file)
-        for (let key in program) {
-          if (!(program[key] instanceof Object)) {
-            data.append(key, program[key])
-          }
-        }
-      }
-      Event.$emit('progressbar.toggle', true)
-      this.$http.put(`/api/programs/${program._id}`, data).then(
-        function (response) {
-          Event.$emit('progressbar.toggle', false)
-          Event.$emit('program.updated', response.body)
-          Event.$emit('snackbar.message', `Program ${response.body.name} updated`)
-        },
-        function (response) {
-          Event.$emit('progressbar.toggle', false)
-          console.error(response)
-          Event.$emit('snackbar.message', `Error : ${response.statusText ? response.statusText : 'no connection'}`)
-        }
-      )
-    },
-    deleteProgram: function (program) {
-      Event.$emit('progressbar.toggle', true)
-      this.$http.delete(`/api/programs/${program._id}`).then(
-        function (response) {
-          Event.$emit('progressbar.toggle', false)
-          Event.$emit('program.deleted', program)
-          Event.$emit('snackbar.message', 'Program ' + program.name + ' deleted')
-        },
-        function (response) {
-          Event.$emit('progressbar.toggle', false)
-          console.error(response)
-          Event.$emit('snackbar.message', `Error : ${response.statusText ? response.statusText : 'no connection'}`)
-        }
-      )
     }
   }
 }

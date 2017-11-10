@@ -11,18 +11,18 @@
         </h2>
       </header>
       <section id="my-mdc-dialog-description" class="mdc-dialog__body mdc-dialog__body--scrollable">
-        <div class="mdc-textfield mdc-textfield--fullwidth" v-bind:class="{ 'mdc-textfield--upgraded' : topic.title }">
-          <input type="text" id="title" class="mdc-textfield__input" :value="topic.title" v-model.lazy="topic.title">
-          <label for="title" class="mdc-textfield__label" v-bind:class="{ 'mdc-textfield__label--float-above' : topic.title }">Title</label>
+        <div class="mdc-text-field mdc-text-field--fullwidth" v-bind:class="{ 'mdc-text-field--upgraded' : topic.title }">
+          <input type="text" id="title" class="mdc-text-field__input" :value="topic.title" v-model.lazy="topic.title">
+          <label for="title" class="mdc-text-field__label" v-bind:class="{ 'mdc-text-field__label--float-above' : topic.title }">Title</label>
         </div>
-        <div class="mdc-textfield mdc-textfield--fullwidth mdc-textfield--textarea">
-          <textarea id="description" class="mdc-textfield__input" rows="8" placeholder="Description" v-model.lazy="topic.description">{{ topic.description }}</textarea>
+        <div class="mdc-text-field mdc-text-field--fullwidth mdc-text-field--textarea">
+          <textarea id="description" class="mdc-text-field__input" rows="8" placeholder="Description" v-model.lazy="topic.description">{{ topic.description }}</textarea>
         </div>
         <div class="mdc-grid-list">
           <ul class="mdc-grid-list__tiles">
             <li class="mdc-grid-tile" v-for="media in medias">
               <div class="mdc-grid-tile__primary">
-                <img class="mdc-grid-tile__primary-content" :src="media.uri" />
+                <img class="mdc-grid-tile__primary-content" :src="media._id && media.uri ? media.uri + '?height=256' : media.uri" />
                 <i class="material-icons" v-on:click="deleteMedia(media)">cancel</i>
               </div>
               <span class="mdc-grid-tile__secondary" v-if="media.label">
@@ -35,9 +35,9 @@
                 <img class="mdc-grid-tile__primary-content" v-on:click="$event.currentTarget.parentNode.querySelector('input').click()"/>
               </div>
               <span class="mdc-grid-tile__secondary">
-                <span class="mdc-grid-tile__title mdc-textfield">
-                  <input type="text" id="uri" class="mdc-textfield__input" v-on:change="uriChange($event)">
-                  <label for="uri" class="mdc-textfield__label">URL</label>
+                <span class="mdc-grid-tile__title mdc-text-field">
+                  <input type="text" id="uri" class="mdc-text-field__input" v-on:change="uriChange($event)">
+                  <label for="uri" class="mdc-text-field__label">URL</label>
                 </span>
               </span>
             </li>
@@ -61,7 +61,7 @@
 
 <script>
 import Event from '../../utils/EventBus.js'
-import { dialog, textfield } from 'material-components-web'
+import { dialog, textField } from 'material-components-web'
 import assign from 'object-assign'
 import validUrl from 'valid-url'
 
@@ -76,8 +76,8 @@ export default {
   },
   mounted () {
     this.dialog = new dialog.MDCDialog(this.$el)
-    textfield.MDCTextfield.attachTo(this.$el.querySelector('.mdc-textfield'))
-    this.addTileTextfield = new textfield.MDCTextfield(this.$el.querySelector('.add-tile .mdc-textfield'))
+    textField.MDCTextField.attachTo(this.$el.querySelector('.mdc-text-field'))
+    this.addTileTextfield = new textField.MDCTextField(this.$el.querySelector('.add-tile .mdc-text-field'))
     Event.$on('topicDialog.show', this.show)
     Event.$on('topicDialog.close', this.close)
   },
@@ -129,7 +129,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.mdc-textfield--textarea {
+.mdc-text-field--textarea {
   margin-top: 16px;
 }
 
@@ -137,8 +137,8 @@ export default {
   max-height: calc(80vh - 56px - 52px); /* main - header - footer */
 }
 
-/* fix mdc-textfield--fullwidth padding */
-.mdc-textfield--fullwidth:not(.mdc-textfield--textarea) .mdc-textfield__input {
+/* fix mdc-text-field--fullwidth padding */
+.mdc-text-field--fullwidth:not(.mdc-text-field--textarea) .mdc-text-field__input {
   padding: 10px 0;
 }
 
@@ -188,15 +188,15 @@ export default {
   height: inherit;
 }
 
-.add-tile .mdc-grid-tile__secondary .mdc-textfield:not(.mdc-textfield--invalid) label {
+.add-tile .mdc-grid-tile__secondary .mdc-text-field:not(.mdc-text-field--invalid) label {
   color: white;
 }
 
-.add-tile .mdc-grid-tile__secondary .mdc-textfield:not(.mdc-textfield--invalid) input {
+.add-tile .mdc-grid-tile__secondary .mdc-text-field:not(.mdc-text-field--invalid) input {
   border-color: white;
 }
 
-.add-tile .mdc-grid-tile__secondary .mdc-textfield input {
+.add-tile .mdc-grid-tile__secondary .mdc-text-field input {
   color: white;
 }
 

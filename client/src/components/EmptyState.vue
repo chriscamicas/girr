@@ -45,4 +45,8 @@ export default {
 .empty-state a {
   margin: 0 auto;
 }
+
+#app.bottombarActive .empty-state {
+  height: calc(100vh - 68px - 56px);
+}
 </style>
