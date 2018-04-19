@@ -12,11 +12,13 @@ class XSplit {
       this.title = data.title
       this.picture = data.picture
       this.background = data.background
+      this.logo = data.logo
       /**
-       * actually, we should store the episode, topic and media currently playing :
+       * actually, we should store the program, episode, topic and media currently playing :
        * that way, the client knows what to display (Media > Topic > Episode)
        * and the server doesn't need to tell the client what title or picture
        */
+      // this.program = data.program
       // this.episode = data.episode
       // this.topic = data.topic
       // this.media = data.media
@@ -26,6 +28,8 @@ class XSplit {
       this.title = null
       this.picture = null
       this.background = null
+      this.logo = null
+      // this.program = null // or {}
       // this.episode = null // or {}
       // this.topic = null // or {}
       // this.media = null // or {}

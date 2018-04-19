@@ -3,8 +3,9 @@
     <div class="bar">{{ animatedTitle }}</div>
     <div class="title">{{ animatedTitle }}</div>
     <div class="content">
-      <img v-if="xsplit.picture" :src="xsplit.picture" v-bind:class="{ loading: xsplit.picture }" v-on:load="loaded($event)" v-on:error="failed($event)">
+      <img v-if="xsplit.picture" :src="xsplit.picture" :class="{ loading: xsplit.picture }" v-on:load="loaded($event)" v-on:error="failed($event)">
    	</div>
+    <img class="logo" v-if="logo" :src="logo">
   </main>
 </template>
 
@@ -74,6 +75,9 @@ export default {
         return 'url(' + (this.xsplit.background ? this.xsplit.background : require('../assets/img-background.jpg')) + ')'
       }
       return null
+    },
+    logo () {
+      return this.xsplit.logo ? this.xsplit.logo + '?height=72' : null
     }
   },
   methods: {
@@ -169,17 +173,13 @@ export default {
   }
 }
 
-.xsplit .title {
-  /* en mode apparition, on veut que le texte apparaisse vers la fin de l'animation */
-  transition: transform 1s, color 2s ease-in-out;
-  transform-origin: left;
-}
-
-.xsplit .title.hidden {
-  /* en mode disparition, on veut que le texte disparaisse plus tôt pour éviter l'écrasement */
-  transition: transform 1s, color 0.5s ease-in-out;
-  transform : scaleX(0);
-  color: white;
+.xsplit .logo {
+  position: absolute;
+  top: 0;
+  right: 0;
+  max-height: 72px;
+  max-width: 72px;
+  margin: 12px;
 }
 
 .xsplit .content {

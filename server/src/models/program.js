@@ -9,6 +9,8 @@ const websockets = require('../websockets')()
 let programSchema = new mongoose.Schema({
     name: { type: String, required: true},
     thumbnail: { type: String },
+    logo: { type: String },
+    logoBW: { type: String }, // logo in black and white
     created: { type: Date, required: true },
     modified: { type: Date, required: true },
     episodes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Episode' }]

@@ -14,7 +14,7 @@ const mime = require('mime')
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    let uploadsPath = process.env.DATA_PATH + '/uploads'
+    const uploadsPath = process.env.DATA_PATH + '/uploads'
     if (!fs.existsSync(uploadsPath)) fs.mkdirSync(uploadsPath)
     cb(null, uploadsPath)
   },
@@ -426,6 +426,9 @@ router.get('/:mediaId/start', function (req, res, next) {
     req.episode.started = Date.now()
     req.episode.ended = null
     req.episode.save()
+
+    xsplit.logo = req.program.logoBW
+    xsplit.save()
   }
 })
 

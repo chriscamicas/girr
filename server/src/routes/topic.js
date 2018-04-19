@@ -328,6 +328,7 @@ router.route('/:topicId')
  *           $ref: '#/definitions/Topic'
  */
 router.get('/:topicId/start', function (req, res, next) {
+  let xsplit = new XSplit()
   req.topic.started = Date.now()
   req.topic.ended = null
   req.topic
@@ -335,7 +336,6 @@ router.get('/:topicId/start', function (req, res, next) {
     .then(function(topicStarted) {
       logger.debug("Started " + topicStarted.toString())
 
-      let xsplit = new XSplit()
       xsplit.title = req.topic.title
       xsplit.picture = null
       xsplit.save()
@@ -350,6 +350,9 @@ router.get('/:topicId/start', function (req, res, next) {
     req.episode.started = Date.now()
     req.episode.ended = null
     req.episode.save()
+
+    xsplit.logo = req.program.logoBW
+    xsplit.save()
   }
 })
 
@@ -484,106 +487,6 @@ router.get('/:topicId/move', async function (req, res, next) {
     next({message:"Couldn't move the Topic at the new position " + newPosition, status: 500})
   }
 })
-
-// legacy code, est-il encore nécessaire ? - @Matthieu Petit
-router.get('/:topic/checkintegrity', (req, res, next) => {
-    let recovery = [];
-    let modified = false;
-    Media.find({
-        topic: req.topic._id
-    }, (err, medias) => {
-        if (err) return next(err);
-        recovery = req.topic.medias.slice(0); // on copie les medias déjà présentes dans la topic
-        medias.forEach(media => {
-            if (!req.topic.medias.find(v => {
-                return v.toString() === media._id.toString();
-            })) {
-                modified = true;
-                recovery.push(media._id); // une media perdue, on la rajoute
-            }
-        });
-        let mediasToRemove = [];
-        req.topic.medias.forEach(r => {
-            if (!medias.find(v => {
-                return r.toString() === v._id.toString();
-            })) {
-                mediasToRemove.push(r);
-            }
-        });
-        mediasToRemove.forEach(elToRemove => {
-            let index = recovery.findIndex(v => v.toString() === elToRemove.toString());
-            if (index >= 0) {
-                modified = true;
-                recovery.splice(index, 1);
-            }
-        })
-        // if(modified) {
-        //     req.topic.medias = recovery;
-        //     req.topic.save(err => {
-        //         if (err) return next(err);
-        //         return res.sendStatus(200);
-        //     });
-        // } else {
-        //     return res.sendStatus(204);
-        // }
-        res.send({
-            modified: modified,
-            before: req.topic.medias,
-            after: recovery
-        });
-    });
-});
-
-// legacy code, est-il encore nécessaire ? - @Matthieu Petit
-router.get('/:topic/recover', (req, res, next) => {
-    let recovery = [];
-    let modified = false;
-    Media.find({
-        topic: req.topic._id
-    }, (err, medias) => {
-        if (err) return next(err);
-        recovery = req.topic.medias.slice(0); // on copie les medias déjà présentes dans la topic
-        medias.forEach(media => {
-            if (!req.topic.medias.find(v => {
-                return v.toString() === media._id.toString();
-            })) {
-                modified = true;
-                recovery.push(media._id); // une media perdue, on la rajoute
-            }
-
-        });
-        // 59b86d69016d791afbf1ff73
-        let mediastoRemove = [];
-        req.topic.medias.forEach(r => {
-            if (!medias.find(v => {
-                return r.toString() === v._id.toString();
-            })) {
-                mediastoRemove.push(r);
-            }
-        });
-        mediastoRemove.forEach(elToRemove => {
-            let index = recovery.findIndex(v => v.toString() === elToRemove.toString());
-            if (index >= 0) {
-                modified = true;
-                recovery.splice(index, 1);
-            }
-        })
-        if(modified) {
-            req.topic.medias = recovery;
-            req.topic.save(err => {
-                if (err) return next(err);
-                return res.sendStatus(200);
-            });
-        } else {
-            return res.sendStatus(204);
-        }
-        // res.send({
-        //     modified: modified,
-        //     before: req.topic.medias,
-        //     after: recovery
-        // });
-    });
-});
 
 router.use('/:topicId/medias', require('./media'));
 

@@ -26,12 +26,6 @@ export default {
     this.$options.sockets[`programs.${this.program._id}`] = function (data) {
       Event.$emit('program.updated', data)
     }
-    Event.$on('program.update', (program, file) => {
-      if (program._id === this.program._id) this.updateProgram(program, file)
-    })
-    Event.$on('program.delete', (program) => {
-      if (program._id === this.program._id) this.deleteProgram(program)
-    })
   },
   mounted () {
     this.menu = new menu.MDCSimpleMenu(this.$el.querySelector('.mdc-simple-menu'))
@@ -46,46 +40,6 @@ export default {
       event.preventDefault()
       event.stopPropagation()
       Event.$emit('programDialog.show', this.program)
-    },
-    updateProgram: function (program, file) {
-      let data = program
-      if (typeof file !== 'undefined') {
-        data = new FormData()
-        data.append('thumbnail', file)
-        for (let key in program) {
-          if (!(program[key] instanceof Object)) {
-            data.append(key, program[key])
-          }
-        }
-      }
-      Event.$emit('progressbar.toggle', true)
-      this.$http.put(`/api/programs/${program._id}`, data).then(
-        function (response) {
-          Event.$emit('progressbar.toggle', false)
-          Event.$emit('program.updated', response.body)
-          Event.$emit('snackbar.message', `Program ${response.body.name} updated`)
-        },
-        function (response) {
-          Event.$emit('progressbar.toggle', false)
-          console.error(response)
-          Event.$emit('snackbar.message', `Error : ${response.statusText ? response.statusText : 'no connection'}`)
-        }
-      )
-    },
-    deleteProgram: function (program) {
-      Event.$emit('progressbar.toggle', true)
-      this.$http.delete(`/api/programs/${program._id}`).then(
-        function (response) {
-          Event.$emit('progressbar.toggle', false)
-          Event.$emit('program.deleted', program)
-          Event.$emit('snackbar.message', 'Program ' + program.name + ' deleted')
-        },
-        function (response) {
-          Event.$emit('progressbar.toggle', false)
-          console.error(response)
-          Event.$emit('snackbar.message', `Error : ${response.statusText ? response.statusText : 'no connection'}`)
-        }
-      )
     }
   }
 }

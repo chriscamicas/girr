@@ -14,7 +14,7 @@
     "lint": "eslint --ext .js,.vue src test/unit/specs test/e2e/specs"
   },
   "dependencies": {
-    "material-components-web": "^0.22",
+    "material-components-web": "^0.24",
     "material-design-icons": "^3.0.1",
     "tween.js": "^16.6.0",
     "valid-url": "^1.0.9",

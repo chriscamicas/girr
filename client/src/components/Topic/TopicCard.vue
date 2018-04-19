@@ -2,7 +2,7 @@
   <div class="topic" v-bind:class="{ expanded : topic.expanded, playing : topic.started !== null && topic.ended === null }">
     <li role="separator" class="mdc-list-divider"></li>
     <li class="mdc-list-item" data-mdc-auto-init="MDCRipple" v-on:click="toggle(!topic.expanded)">
-      <img v-if="medias.length > 0" class="mdc-list-item__start-detail" :src="medias[0].uri" width="56" height="56" :alt="medias[0].label">
+      <img v-if="medias.length > 0" class="mdc-list-item__start-detail unselectable" :src="medias[0].uri ? medias[0].uri + '?height=56' : null" width="56" height="56" :alt="medias[0].label">
       <span v-else class="mdc-list-item__start-detail" role="presentation">
         <i class="material-icons" aria-hidden="true">comment</i>
       </span>
@@ -15,7 +15,7 @@
         <time v-if="topic.started">{{ timePlayed | formatTime }}</time>
         <i v-if="topic.started !== null && topic.ended === null" class="mdc-icon-toggle material-icons" arial-label="Stop" v-on:click="stop">stop</i>
         <i v-else class="mdc-icon-toggle material-icons" arial-label="Playing" v-on:click="start">play_arrow</i>
-        <i class="material-icons chevron" arial-label="Chevron">keyboard_arrow_down</i>
+        <i class="material-icons chevron unselectable" arial-label="Chevron">keyboard_arrow_down</i>
       </span>
     </li>
     <div class="content">

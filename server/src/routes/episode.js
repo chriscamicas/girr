@@ -309,6 +309,7 @@ router.get('/:episodeId/start', function (req, res, next) {
         let xsplit = new XSplit()
         xsplit.title = episode.name
         xsplit.picture = null
+        xsplit.logo = req.program.logoBW
         xsplit.save()
       })
       .catch(function(error) {
@@ -381,6 +382,7 @@ router.get('/:episodeId/stop', function (req, res, next) {
           let xsplit = new XSplit()
           xsplit.title = null
           xsplit.picture = null
+          xsplit.logo = null
           xsplit.save()
         })
         .catch(function(error) {
@@ -390,37 +392,6 @@ router.get('/:episodeId/stop', function (req, res, next) {
     next({message:"Episode " + req.params.episodeId + " cannot be stopped if it isn't playing", status: 417})
   }
 })
-
-/* legacy endpoint */
-router.get('/:episode/full', (req, res) => {
-    "use strict";
-    // this.episode = {
-    //     title: 'Bits 59',
-    //     displayed: null,
-    //     news: [
-    //         {
-    //             title: 'Hyperloop One le test fonctionnel',
-    //             incrusts: [
-    //                 '/assets/programs/bits/59/0.jpg',
-    //                 '/assets/programs/bits/59/1.jpg'
-    //             ]
-    //         },
-
-    Topic.find({
-        episode: req.episode._id
-    }, { '_id': 0, 'number': 1, 'title': 1, 'notes': 1, 'medias': 1 }, { 'sort': { 'number': 1 } }).lean().exec((err, news) => {
-        let nameCapitalFirst = req.program.name.charAt(0).toUpperCase() + req.program.name.slice(1);
-        let episodeFull = {
-            titre: `${nameCapitalFirst} ${req.episode.number}`,
-            news: news
-        };
-        let baseUrl = req.originalUrl.replace('full', '');
-        episodeFull.news.forEach(n => {
-            n.incrusts = n.incrusts.map(incrust => path.join(baseUrl, 'news', n.number.toString(), 'incrusts', incrust.toString()));
-        });
-        res.send(episodeFull);
-    });
-});
 
 router.use('/:episodeId/topics', require('./topic'));
 

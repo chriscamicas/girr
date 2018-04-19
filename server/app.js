@@ -54,9 +54,10 @@ app.use(bodyParser.urlencoded({ extended: false }))
 })
 // Indique que le dossier /dist contient des fichiers statiques (middleware chargé de base)
 .use(express.static('./dist'))
-.use('/data', express.static(process.env.DATA_PATH))
+// .use('/data', express.static(process.env.DATA_PATH))
  // swagger.json
 .use('/', require('./src/swagger'))
+.use('/data', require('./src/routes/data.js'))
  // swagger UI
 .get('/api', function (req, res) {
   res.sendFile(path.resolve('public/swagger/index.html'))

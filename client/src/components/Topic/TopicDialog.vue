@@ -22,7 +22,7 @@
           <ul class="mdc-grid-list__tiles">
             <li class="mdc-grid-tile" v-for="media in medias">
               <div class="mdc-grid-tile__primary">
-                <img class="mdc-grid-tile__primary-content" :src="media.uri" />
+                <img class="mdc-grid-tile__primary-content" :src="media._id && media.uri ? media.uri + '?height=256' : media.uri" />
                 <i class="material-icons" v-on:click="deleteMedia(media)">cancel</i>
               </div>
               <span class="mdc-grid-tile__secondary" v-if="media.label">
