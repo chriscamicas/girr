@@ -57,8 +57,6 @@ let topicSchema = new mongoose.Schema({
     medias: [{ type: mongoose.Schema.Types.ObjectId, ref:'Media' }]
 })
 
-let topicModel = mongoose.model('Topic', topicSchema)
-
 // when a Topic is removed, delete all its Medias
 topicSchema.post('remove', function(topic) {
   logger.debug(`Removed Topic ${topic._id}`)
@@ -81,7 +79,7 @@ topicSchema.pre('save', function(next) {
   
   // stop all others topics if this one starts playing
   if (this.isModified('started') && this.started && !this.ended) {
-    topicModel
+    this.constructor
       .find({ ended : null })
       .where('_id').ne(this._id)
       .where('started').ne(null)
@@ -119,4 +117,4 @@ topicSchema.post('save', function(topic) {
   websockets.sockets.emit('topics.' + topic._id, topic)
 })
 
-module.exports = topicModel
+module.exports = mongoose.model('Topic', topicSchema)

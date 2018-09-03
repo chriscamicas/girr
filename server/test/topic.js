@@ -131,7 +131,56 @@ describe('Topics', () => {
         })
     })
   })
- 
+
+  /*
+   * Start two topics successively
+   */
+  describe('GET /api/programs/:programId/episodes/:episodeId/topics/:id/start', () => {
+    it('it should start a Topic and end all previously started', (done) => {
+      chai.request(server)
+        .post(`/api/programs/${program._id}/episodes/${episode._id}/topics`)
+        .send({ title: 'A topic that should start' })
+        .end((err, res) => {
+          expect(err).to.not.be.ok
+          res.should.have.status(200)
+          res.body.should.be.a('object')
+          res.body.should.have.property('_id').not.be.empty
+          chai.request(server)
+            .get(`/api/programs/${program._id}/episodes/${episode._id}/topics/${res.body._id}/start`)
+            .end((err, res) => {
+              expect(err).to.not.be.ok
+              res.should.have.status(200)
+              res.body.should.be.a('object')
+              res.body.should.have.property('_id').not.be.empty
+              res.body.should.have.property('started').not.eql(null)
+              res.body.should.have.property('ended').eql(null)
+              let startedTopic = res.body
+              chai.request(server)
+                .get(`/api/programs/${program._id}/episodes/${episode._id}/topics/${topic._id}/start`)
+                .end((err, res) => {
+                  expect(err).to.not.be.ok
+                  res.should.have.status(200)
+                  res.body.should.be.a('object')
+                  res.body.should.have.property('_id').eql(topic._id.toString())
+                  res.body.should.have.property('started').not.eql(null)
+                  res.body.should.have.property('ended').eql(null)
+                  chai.request(server)
+                    .get(`/api/programs/${program._id}/episodes/${episode._id}/topics/${startedTopic._id}`)
+                    .end((err, res) => {
+                      expect(err).to.not.be.ok
+                      res.should.have.status(200)
+                      res.body.should.be.a('object')
+                      res.body.should.have.property('_id').eql(startedTopic._id.toString())
+                      res.body.should.have.property('started').not.eql(null)
+                      res.body.should.have.property('ended').not.eql(null)
+                      done()
+                    })
+                })
+            })
+        })
+    })
+  })
+
   /*
    * Delete a single Topic
    */

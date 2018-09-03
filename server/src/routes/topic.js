@@ -210,7 +210,6 @@ router.route('/:topicId')
     req.topic
       .save()
       .then(function(topic) {
-        logger.debug(`Updated Topic\n${topic.toString()}`)
         res.json(topic)
       })
       .catch(function(error) {

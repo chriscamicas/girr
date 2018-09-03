@@ -45,8 +45,6 @@ let mediaSchema = new mongoose.Schema({
   topic: { type: mongoose.Schema.Types.ObjectId, ref:'Topic', required: true },
 })
 
-const mediaModel = mongoose.model('Media', mediaSchema)
-
 mediaSchema.methods.toJSON = function() {
  let obj = this.toObject()
  delete obj.path // remove/hide the local path
@@ -65,7 +63,6 @@ mediaSchema.pre('remove', function(next) {
   next()
 })
 
-// when a Media is removed, delete its file
 mediaSchema.post('remove', function(media) {
   logger.debug(`Removed Media ${media._id}`)
   websockets.sockets.emit('medias.' + media._id + '.delete', media)
@@ -76,7 +73,7 @@ mediaSchema.pre('save', function(next) {
 
   // stop all others medias if this one starts playing
   if (this.isModified('started') && this.started && !this.ended) {
-    mediaModel
+    this.constructor
       .find({ ended : null })
       .where('_id').ne(this._id)
       .where('started').ne(null)
@@ -125,4 +122,4 @@ mediaSchema.virtual('thumbnail').get(function() {
 mediaSchema.set('toObject', { virtuals: true })
 mediaSchema.set('toJSON', { virtuals: true })
 
-module.exports = mediaModel
+module.exports = mongoose.model('Media', mediaSchema)

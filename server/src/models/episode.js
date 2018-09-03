@@ -55,8 +55,6 @@ let episodeSchema = new mongoose.Schema({
 });
 episodeSchema.index({ number: 1, program: 1 }, { unique: true })
 
-const episodeModel = mongoose.model('Episode', episodeSchema)
-
 // when an Episode is removed, delete all its Topics
 episodeSchema.post('remove', function(episode) {
   logger.debug(`Removed Episode ${episode._id}`)
@@ -79,7 +77,7 @@ episodeSchema.pre('save', function(next) {
 
   // stop all others episodes if this one starts playing
   if (this.isModified('started') && this.started && !this.ended) {
-    episodeModel
+    this.constructor
       .find({ ended : null })
       .where('_id').ne(this._id)
       .where('started').ne(null)
@@ -126,4 +124,4 @@ episodeSchema.post('save', function(episode) {
   websockets.sockets.emit(`episodes.${episode._id}`, episode)
 })
 
-module.exports = episodeModel
+module.exports = mongoose.model('Episode', episodeSchema)
