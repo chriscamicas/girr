@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "dev": "nodemon --config config/nodemon.json app.js",
+    "dev": "nodemon --inspect --config config/nodemon.json app.js",
     "test": "MONGO_ENDPOINT=mongodb://localhost/girr_test mocha --timeout 10000 --exit"
   },
   "author": "Christophe Camicas",
