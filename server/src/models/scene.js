@@ -52,6 +52,7 @@ class Scene {
       this.title = data.title
       this.picture = data.picture
       this.background = data.background
+      this.fullscreen = data.fullscreen
       this.logo = data.logo
       /**
        * actually, we should store the program, episode, topic and media currently playing :

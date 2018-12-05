@@ -1,7 +1,7 @@
 <template>
   <main class="scene" :style="{ 'background-image': background }">
-    <div class="title">{{ animatedTitle }}</div>
-    <div class="content">
+    <div v-if="!scene.fullscreen" class="title">{{ animatedTitle }}</div>
+    <div :class="{fullscreen: scene.fullscreen}" class="content">
       <img v-if="!iframeContent" :src="scene.picture" :class="{ loading: scene.picture }" v-on:load="loaded($event)" v-on:error="failed($event)">
       <iframe v-else :src="iframeContent" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
    	</div>
@@ -33,6 +33,9 @@ export default {
       return this.scene.media && this.scene.media.mimeType.includes('html') ? this.scene.media.uri : null
     },
     background () {
+      if (this.scene.fullscreen) {
+        return null
+      }
       if (this.scene.picture) {
         return 'url(' + (this.scene.background ? this.scene.background : require('../assets/img-background.jpg')) + ')'
       }
@@ -182,6 +185,9 @@ export default {
   margin: 12px;
 }
 
+.fullscreen {
+  margin-top: 0 !important;
+}
 .scene .content {
 	flex: 1 1 100%; /* fills remaining space */
 	display: flex;

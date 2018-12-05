@@ -51,6 +51,7 @@ let topicSchema = new mongoose.Schema({
     position: { type: Number, required: true, index: true },
     started: { type: Date },
     ended: { type: Date },
+    fullscreen: { type: Boolean },
     created: { type: Date, required: true },
     modified: { type: Date, required: true },
     episode: { type: mongoose.Schema.Types.ObjectId, ref:'Episode' },
@@ -76,7 +77,7 @@ topicSchema.post('remove', function(topic) {
 
 topicSchema.pre('save', function(next) {
   this.wasNew = this.isNew
-  
+
   // stop all others topics if this one starts playing
   if (this.isModified('started') && this.started && !this.ended) {
     this.constructor

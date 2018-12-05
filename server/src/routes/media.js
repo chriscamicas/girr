@@ -22,9 +22,9 @@ const storage = multer.diskStorage({
     cb(null, path.basename(file.originalname, path.extname(file.originalname)).replace(/\s/g, "_") + '-' + uuidv4() + path.extname(file.originalname))
   }
 })
-const upload = multer({ 
+const upload = multer({
   storage: storage,
-  limits: { 
+  limits: {
     fieldSize: 10 * 1024 * 1024 // 10 MB
   }
 })
@@ -302,7 +302,7 @@ router.route('/:mediaId')
   .put(function (req, res, next) {
     delete req.body.started
     delete req.body.ended
-    
+
     req.media = Object.assign(req.media, req.body, {modified: Date.now()})
     req.media
       .save()
@@ -410,6 +410,7 @@ router.get('/:mediaId/start', function (req, res, next) {
         let scene = new Scene()
         scene.media = media
         scene.picture = media.uri
+        scene.fullscreen = req.topic.fullscreen
 
         // we start the parent Topic if it isn't already
         if (!(req.topic.started && !req.topic.ended)) {
@@ -418,6 +419,7 @@ router.get('/:mediaId/start', function (req, res, next) {
           req.topic.save()
 
           scene.topic = req.topic
+          scene.fullscreen = req.topic.fullscreen
           scene.title = req.topic.title
         }
 

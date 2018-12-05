@@ -18,6 +18,18 @@
         <div class="mdc-text-field mdc-text-field--fullwidth mdc-text-field--textarea">
           <textarea id="description" class="mdc-text-field__input" rows="8" :placeholder="$t('topic.description_label')" v-model.lazy="topic.description">{{ topic.description }}</textarea>
         </div>
+        <div class="mdc-form-field">
+          <div class="mdc-checkbox">
+            <input type="checkbox" class="mdc-checkbox__native-control" v-model.lazy="topic.fullscreen" id="fullscreen"/>
+            <div class="mdc-checkbox__background">
+              <svg version="1.1" class="mdc-checkbox__checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" xml:space="preserve">
+                <path class="mdc-checkbox__checkmark__path" fill="none" stroke="white" d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+              </svg>
+              <div class="mdc-checkbox__mixedmark"></div>
+            </div>
+          </div>
+          <label for="fullscreen">Fullscreen</label>
+        </div>
         <div class="mdc-grid-list">
           <ul class="mdc-grid-list__tiles">
             <li class="mdc-grid-tile" v-for="media in medias">
@@ -105,8 +117,10 @@ export default {
       this
         .updateTopic(this.topic)
         .then((response) => {
-          Event.$emit(`topics.${this.topic._id}.update`, this.topic, this.medias)
-          this.close()
+          if (response) {
+            Event.$emit(`topics.${this.topic._id}.update`, this.topic, this.medias)
+            this.close()
+          }
         })
         .finally(() => {
           this.$el.querySelector('.mdc-dialog__footer__button--accept').disabled = false
@@ -154,10 +168,12 @@ export default {
         function (response) {
           Event.$emit('progressbar.toggle', false)
           Event.$emit('topic.updated', response.body)
+          return true
         },
         function (response) {
           Event.$emit('progressbar.toggle', false)
           Event.$emit('http.error', response)
+          return false
         }
       )
     },
@@ -280,4 +296,9 @@ export default {
   color: red;
   margin-right: auto;
 }
+
+/* .mdc-checkbox {
+  display: flex;
+  flex-direction: column;
+} */
 </style>
