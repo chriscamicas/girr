@@ -69,6 +69,7 @@ class Scene {
       this.title = null
       this.picture = null
       this.background = null
+      this.fullscreen = false
       this.logo = null
       this.episode = null // or {} or search for playing episode in the database
       this.topic = null // same

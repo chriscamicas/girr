@@ -77,7 +77,7 @@ router.route('/')
 
     let episode = new Episode(Object.assign(req.body, {created: Date.now(), modified: Date.now()}))
     episode.program = req.program._id
-    
+
     // provide a number if the user didn't specified one
     if (typeof episode.number === "undefined") {
       const programEpisodes = await Episode.find({ program: req.program._id }).exec()
@@ -229,10 +229,11 @@ router.route('/:episodeId')
           scene.topic = null
           scene.media = null
           scene.title = null
+          scene.fullscreen = false
           scene.picture = null
           scene.logo = null
           scene.save()
-          
+
           res.status(204).json(result.toString())
         } else {
           next({message: `Episode ${req.params.episodeId} wasn't deleted`, status: 417})
@@ -282,6 +283,7 @@ router.get('/:episodeId/start', function (req, res, next) {
         scene.episode = req.episode
         scene.title = episode.name
         scene.topic = null
+        scene.fullscreen = false
         scene.media = null
         scene.picture = null
         scene.logo = req.program.logoBW
@@ -359,6 +361,7 @@ router.get('/:episodeId/stop', function (req, res, next) {
           scene.topic = null
           scene.media = null
           scene.title = null
+          scene.fullscreen = false
           scene.picture = null
           scene.logo = null
           scene.save()
@@ -377,7 +380,7 @@ router.get('/:episodeId/stop', function (req, res, next) {
  *   get:
  *     tags:
  *       - Episodes
- *     description: > 
+ *     description: >
  *       Find the current playing Topic and start its next sibling.
  *       If there is no playing Topic, start the first.
  *       If it is already the last, send an error.
@@ -430,6 +433,7 @@ router.get('/:episodeId/next', function (req, res, next) {
               scene.topic = topicStarted
               scene.media = null
               scene.title = topicStarted.title
+              scene.fullscreen = false
               scene.picture = null
               scene.save()
             })
@@ -516,7 +520,7 @@ router.get('/:episodeId/clone', async function (req, res, next) {
 
           if (media.path) {
             const pathObject = path.parse(media.path)
-            const newFilePath = `${path.join(pathObject.dir, pathObject.name)}-copy${pathObject.ext}` 
+            const newFilePath = `${path.join(pathObject.dir, pathObject.name)}-copy${pathObject.ext}`
             fs.copyFileSync(media.path, newFilePath)
             newMedia.path = newFilePath
             newMedia.uri = newFilePath.replace(process.env.DATA_PATH, '/data').replace(/\\/g, path.posix.sep)

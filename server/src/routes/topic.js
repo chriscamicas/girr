@@ -205,7 +205,7 @@ router.route('/:topicId')
   .put(function (req, res, next) {
     delete req.body.started
     delete req.body.ended
-    
+
     req.topic = Object.assign(req.topic, req.body, {modified: Date.now()})
     req.topic
       .save()
@@ -306,6 +306,7 @@ router.get('/:topicId/start', function (req, res, next) {
       scene.title = topicStarted.title
       scene.media = null // no content should be displayed when cast start talking about a Topic
       scene.picture = null
+      scene.fullscreen = false
 
       // we start the parent Episode if it isn't already
       if (!(req.episode.started && !req.episode.ended)) {
@@ -378,6 +379,7 @@ router.get('/:topicId/stop', function (req, res, next) {
         scene.media = null
         scene.title = req.episode.name
         scene.picture = null
+        scene.fullscreen = false
         scene.save()
 
         logger.debug(`Stopped Topic\n${topic.toString()}`)
@@ -387,7 +389,7 @@ router.get('/:topicId/stop', function (req, res, next) {
         next(error)
       })
 
-  
+
 })
 
 /**

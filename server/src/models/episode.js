@@ -14,6 +14,7 @@ function setName (newName) {
     let scene = new Scene()
     if (scene.title == this.name) {
       scene.title = newName
+      scene.fullscreen = false
       scene.save()
     }
   }
