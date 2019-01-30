@@ -38,8 +38,8 @@ process.env.DATA_PATH = process.env.DATA_PATH.startsWith('/') ? process.env.DATA
 if (!fs.existsSync(process.env.DATA_PATH)) utils.mkdirSyncRecursive(process.env.DATA_PATH)
 
 app
-  .use(bodyParser.urlencoded({ extended: false })) // parse application/x-www-form-urlencoded
-  .use(bodyParser.json()) // parse application/json
+  .use(bodyParser.urlencoded({ limit: '50mb', extended: false })) // parse application/x-www-form-urlencoded
+  .use(bodyParser.json({ limit: '50mb' })) // parse application/json
   .use(function (req, res, next) { // logging middleware to use for all requests
     logger.log('info',
       '[%s] >> %s %s %s',
