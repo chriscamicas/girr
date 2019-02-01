@@ -583,5 +583,6 @@ router.get('/:episodeId/clone', async function (req, res, next) {
 })
 
 router.use('/:episodeId/topics', require('./topic'));
+router.use('/:episodeId/description', require('./description'));
 
 module.exports = router;

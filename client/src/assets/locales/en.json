@@ -10,6 +10,7 @@
 		"stop": "Stop",
 		"pause": "Pause",
 		"expand": "Expand",
+		"copyDescription": "Copy description",
 		"clone": "Clone"
 	},
 	"program": {
