@@ -1,9 +1,12 @@
 {
-  "name": "client",
+  "name": "girr-client",
   "version": "1.0.0",
-  "description": "GeekInc Remote Regie App",
-  "author": "Matthieu PETIT <m4tth.p@gmail.com>",
-  "private": true,
+  "description": "Studio Renegade Remote Regie App",
+  "author": "Christophe Camicas",
+  "contributors": [
+    "Matthieu PETIT <m4tth.p@gmail.com>"
+  ],
+  "private": false,
   "scripts": {
     "dev": "node build/dev-server.js",
     "start": "node build/dev-server.js",
