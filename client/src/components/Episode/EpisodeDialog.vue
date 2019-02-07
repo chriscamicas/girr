@@ -76,39 +76,33 @@ export default {
     confirm: function () {
       this.$el.querySelector('.mdc-dialog__footer__button--accept').disabled = true
       this.updateEpisode(this.episode)
-        .then((response) => {
-          this.close()
-        })
+        .then(response => this.close())
         .finally(() => {
           this.$el.querySelector('.mdc-dialog__footer__button--accept').disabled = false
         })
     },
     updateEpisode: function (episode) {
       Event.$emit('progressbar.toggle', true)
-      return this.$http.put(`/api/programs/${this.$route.params.programId}/episodes/${episode._id}`, episode).then(
-        function (response) {
-          Event.$emit('progressbar.toggle', false)
-          Event.$emit('episode.updated', response.body)
-        },
-        function (response) {
-          Event.$emit('progressbar.toggle', false)
-          Event.$emit('http.error', response)
-        }
-      )
+      return this.$http.put(`/api/programs/${this.$route.params.programId}/episodes/${episode._id}`, episode)
+        .then(response => Event.$emit('episode.updated', response.body))
+        .catch(error => {
+          Event.$emit('http.error', error)
+          return Promise.reject(error)
+        })
+        .finally(() => Event.$emit('progressbar.toggle', false))
     },
     deleteEpisode: function (episode) {
       Event.$emit('progressbar.toggle', true)
-      this.$http.delete(`/api/programs/${this.$route.params.programId}/episodes/${episode._id}`).then(
-        function (response) {
-          Event.$emit('progressbar.toggle', false)
+      return this.$http.delete(`/api/programs/${this.$route.params.programId}/episodes/${episode._id}`)
+        .then((response) => {
           Event.$emit('episode.deleted', episode)
           window.location = this.$router.resolve({ name: 'Program', params: { programId: this.$route.params.programId } }).href
-        },
-        function (response) {
-          Event.$emit('progressbar.toggle', false)
-          Event.$emit('http.error', response)
-        }
-      )
+        })
+        .catch(error => {
+          Event.$emit('http.error', error)
+          return Promise.reject(error)
+        })
+        .finally(() => Event.$emit('progressbar.toggle', false))
     }
   }
 }

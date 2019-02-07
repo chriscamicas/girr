@@ -117,10 +117,8 @@ export default {
       this
         .updateTopic(this.topic)
         .then((response) => {
-          if (response) {
-            Event.$emit(`topics.${this.topic._id}.update`, this.topic, this.medias)
-            this.close()
-          }
+          Event.$emit(`topics.${this.topic._id}.update`, this.topic, this.medias)
+          this.close()
         })
         .finally(() => {
           this.$el.querySelector('.mdc-dialog__footer__button--accept').disabled = false
@@ -164,32 +162,26 @@ export default {
     },
     updateTopic: function (topic) {
       Event.$emit('progressbar.toggle', true)
-      return this.$http.put(`/api/programs/${this.$route.params.programId}/episodes/${this.$route.params.episodeId}/topics/${topic._id}`, topic).then(
-        function (response) {
-          Event.$emit('progressbar.toggle', false)
-          Event.$emit('topic.updated', response.body)
-          return true
-        },
-        function (response) {
-          Event.$emit('progressbar.toggle', false)
-          Event.$emit('http.error', response)
-          return false
-        }
-      )
+      return this.$http.put(`/api/programs/${this.$route.params.programId}/episodes/${this.$route.params.episodeId}/topics/${topic._id}`, topic)
+        .then(response => Event.$emit('topic.updated', response.body))
+        .catch(error => {
+          Event.$emit('http.error', error)
+          return Promise.reject(error)
+        })
+        .finally(() => Event.$emit('progressbar.toggle', false))
     },
     deleteTopic: function (topic) {
       Event.$emit('progressbar.toggle', true)
-      this.$http.delete(`/api/programs/${this.$route.params.programId}/episodes/${this.$route.params.episodeId}/topics/${topic._id}`).then(
-        function (response) {
-          Event.$emit('progressbar.toggle', false)
-          Event.$emit('topic.deleted', topic)
-          this.close()
-        },
-        function (response) {
-          Event.$emit('progressbar.toggle', false)
-          Event.$emit('http.error', response)
-        }
-      )
+      this.$http.delete(`/api/programs/${this.$route.params.programId}/episodes/${this.$route.params.episodeId}/topics/${topic._id}`)
+      .then(() => {
+        Event.$emit('topic.deleted', topic)
+        this.close()
+      })
+      .catch(error => {
+        Event.$emit('http.error', error)
+        return Promise.reject(error)
+      })
+      .finally(() => Event.$emit('progressbar.toggle', false))
     }
   }
 }
