@@ -38,7 +38,7 @@
                 <i class="material-icons" v-on:click="deleteMedia(media)">cancel</i>
               </div>
               <span class="mdc-grid-tile__secondary" v-if="media.label">
-                <span class="mdc-grid-tile__title">{{ media.label }}</span>
+                <span class="mdc-grid-tile__title" :title="media.label">{{ media.label }}</span>
               </span>
             </li>
             <li class="mdc-grid-tile add-tile">
