@@ -1,7 +1,7 @@
 {
-  "name": "girr",
+  "name": "girr-api",
   "version": "2.0.1",
-  "description": "GeekInc Remote Regie",
+  "description": "Studio Renegade Remote Regie",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
@@ -9,6 +9,9 @@
     "test": "MONGO_ENDPOINT=mongodb://localhost/girr_test mocha --timeout 10000 --exit"
   },
   "author": "Christophe Camicas",
+  "contributors": [
+    "Matthieu PETIT <m4tth.p@gmail.com>"
+  ],
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.17.2",

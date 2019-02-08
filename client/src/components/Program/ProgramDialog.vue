@@ -87,9 +87,7 @@ export default {
     confirm: function () {
       this.$el.querySelector('.mdc-dialog__footer__button--accept').disabled = true
       this.updateProgram(this.program, this.$el.querySelectorAll('input[type=file]'))
-        .then((response) => {
-          this.close()
-        })
+        .then(response => this.close())
         .finally(() => {
           this.$el.querySelector('.mdc-dialog__footer__button--accept').disabled = false
         })
@@ -119,31 +117,27 @@ export default {
         }
       }
       Event.$emit('progressbar.toggle', true)
-      return this.$http.put(`/api/programs/${program._id}`, data).then(
-        function (response) {
-          Event.$emit('progressbar.toggle', false)
-          Event.$emit('program.updated', response.body)
-        },
-        function (response) {
-          Event.$emit('progressbar.toggle', false)
-          Event.$emit('http.error', response)
-        }
-      )
+      return this.$http.put(`/api/programs/${program._id}`, data)
+        .then((response) => Event.$emit('program.updated', response.body))
+        .catch(error => {
+          Event.$emit('http.error', error)
+          return Promise.reject(error)
+        })
+        .finally(() => Event.$emit('progressbar.toggle', false))
     },
     deleteProgram: function (program) {
       Event.$emit('progressbar.toggle', true)
-      this.$http.delete(`/api/programs/${program._id}`).then(
-        function (response) {
-          Event.$emit('progressbar.toggle', false)
+      return this.$http.delete(`/api/programs/${program._id}`)
+        .then((response) => {
           Event.$emit('program.deleted', program)
           this.close()
           window.location = this.$router.resolve({name: 'Programs'}).href
-        },
-        function (response) {
-          Event.$emit('progressbar.toggle', false)
-          Event.$emit('http.error', response)
-        }
-      )
+        })
+        .catch(error => {
+          Event.$emit('http.error', error)
+          return Promise.reject(error)
+        })
+        .finally(() => Event.$emit('progressbar.toggle', false))
     }
   }
 }
