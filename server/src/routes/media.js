@@ -485,6 +485,7 @@ router.get('/:mediaId/stop', function (req, res, next) {
         let scene = new Scene()
         scene.media = null
         scene.picture = null
+        scene.fullscreen = false
         scene.save()
         res.json(media)
       })
