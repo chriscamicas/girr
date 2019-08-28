@@ -8,7 +8,7 @@
       </span>
       <span class="mdc-list-item__text">
         {{ topic.title ? topic.title : $t('topic.untitled') }}
-        <span class="mdc-list-item__secondary-text" v-if="topic.started">{{ timePlayed | formatTime }}</span>
+        <span class="mdc-list-item__secondary-text" v-bind:class="{ limited : timePlayed >= 900000 }" v-if="topic.started">{{ timePlayed | formatTime }}</span>
       </span>
       <span class="mdc-list-item__meta">
         <i class="mdc-icon-toggle material-icons edit-button" :arial-label="$t('actions.edit')" v-on:click="editTopic">edit</i>
@@ -347,6 +347,11 @@ export default {
 
 .mdc-list-item .mdc-list-item__secondary-text {
   min-width: 0;
+}
+
+.limited{
+    color: var(--mdc-theme-primary,#ff4081);
+    font-weight: bold;
 }
 
 .mdc-list-item .mdc-list-item__meta {
