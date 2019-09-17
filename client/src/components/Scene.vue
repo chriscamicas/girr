@@ -146,6 +146,7 @@ export default {
   text-transform: uppercase;
   text-overflow: ellipsis; /* ou au pire clip */
   box-sizing: border-box;
+  box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
   line-height: 80px;
   border-radius: 40px;
   position: relative;
