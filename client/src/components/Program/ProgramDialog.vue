@@ -31,6 +31,11 @@
           <img :src="program.logoBW"/>
           <input type="file" name="logoBW" accept="image/*" class="input-file" v-on:change="fileChange($event);" style="display: none;">
         </div>
+        <div class="picture background" v-on:click="$event.currentTarget.querySelector('input').click()">
+          <i class="material-icons">edit</i>
+          <img :src="program.background"/>
+          <input type="file" name="background" accept="image/*" class="input-file" v-on:change="fileChange($event);" style="display: none;">
+        </div>
       </section>
       <footer class="mdc-dialog__footer">
         <button type="button" class="mdc-button mdc-dialog__footer__button mdc-dialog__footer__button--delete" v-on:click="deleteProgram(program)">
@@ -192,7 +197,9 @@ export default {
 }
 
 .mdc-dialog__body .picture.logo,
-.mdc-dialog__body .picture.logoBW {
+.mdc-dialog__body .picture.logoBW,
+.mdc-dialog__body .picture.background
+ {
   display: inline-block;
   width: calc(50% - 4px);
 }
@@ -216,6 +223,18 @@ export default {
       <text x='85' y='28' \
         style='text-anchor: middle' font-size='16'> \
         Logo Black and White \
+      </text> \
+    </svg>\
+  ");
+}
+
+.mdc-dialog__body .picture.background img {
+  background-image: url("\
+  data:image/svg+xml;utf8, \
+    <svg xmlns='http://www.w3.org/2000/svg' version='1.1' width='170px' height='50px'> \
+      <text x='85' y='28' \
+        style='text-anchor: middle' font-size='16'> \
+        Background incruste \
       </text> \
     </svg>\
   ");

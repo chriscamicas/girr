@@ -151,7 +151,8 @@ router.route('/:programId')
   .put(upload.fields([
     { name: 'thumbnail', maxCount: 1 },
     { name: 'logo', maxCount: 1 },
-    { name: 'logoBW', maxCount: 1 }
+    { name: 'logoBW', maxCount: 1 },
+    { name: 'background', maxCount: 1 }
   ]), function (req, res, next) {
     if (req.files) {
       Object.keys(req.files).forEach(function (filename) {

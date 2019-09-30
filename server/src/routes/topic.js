@@ -314,7 +314,8 @@ router.get('/:topicId/start', function (req, res, next) {
         req.episode.ended = null
         req.episode.save()
 
-        scene.logo = req.program.logoBW
+        scene.logo = req.program.logo
+        scene.background = req.program.background
         scene.episode = req.episode
       }
       scene.save()
