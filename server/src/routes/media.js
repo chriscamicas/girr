@@ -411,6 +411,9 @@ router.get('/:mediaId/start', function (req, res, next) {
         scene.media = media
         scene.picture = media.uri
         scene.fullscreen = req.topic.fullscreen
+        scene.logo = req.program.logo
+        scene.background = req.program.background;
+
 
         // we start the parent Topic if it isn't already
         if (!(req.topic.started && !req.topic.ended)) {
@@ -430,7 +433,6 @@ router.get('/:mediaId/start', function (req, res, next) {
           req.episode.save()
 
           scene.episode = req.episode
-          scene.logo = req.program.logoBW
         }
 
         scene.save()

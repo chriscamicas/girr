@@ -24,12 +24,16 @@ const websockets = require('../websockets')()
  *       logoBW:
  *         type: string
  *         description: black and white logo uri
+ *       background:
+ *         type: string
+ *         description: background inscrust uri
  */
 let programSchema = new mongoose.Schema({
     name: { type: String},
     thumbnail: { type: String },
     logo: { type: String },
     logoBW: { type: String }, // logo in black and white
+    background: { type: String },
     created: { type: Date, required: true },
     modified: { type: Date, required: true },
     episodes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Episode' }]

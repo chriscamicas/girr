@@ -286,7 +286,8 @@ router.get('/:episodeId/start', function (req, res, next) {
         scene.fullscreen = false
         scene.media = null
         scene.picture = null
-        scene.logo = req.program.logoBW
+        scene.logo = req.program.logo
+        scene.background = req.program.background
         scene.save()
       })
       .catch(function(error) {
