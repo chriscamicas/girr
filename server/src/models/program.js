@@ -27,16 +27,20 @@ const websockets = require('../websockets')()
  *       background:
  *         type: string
  *         description: background inscrust uri
+ *       primarycolor:
+ *         type: string
+ *         description: couleur primaire pour le titrage
  */
 let programSchema = new mongoose.Schema({
-    name: { type: String},
-    thumbnail: { type: String },
-    logo: { type: String },
-    logoBW: { type: String }, // logo in black and white
-    background: { type: String },
-    created: { type: Date, required: true },
-    modified: { type: Date, required: true },
-    episodes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Episode' }]
+  name: { type: String },
+  thumbnail: { type: String },
+  logo: { type: String },
+  logoBW: { type: String }, // logo in black and white
+  background: { type: String },
+  primarycolor: { type: String },
+  created: { type: Date, required: true },
+  modified: { type: Date, required: true },
+  episodes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Episode" }]
 });
 
 // when a Program is removed, delete all its Episodes

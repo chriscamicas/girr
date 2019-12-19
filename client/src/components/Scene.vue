@@ -1,6 +1,8 @@
 <template>
   <main class="scene" :style="{ 'background-image': background }">
-    <div v-if="!scene.fullscreen" class="title">{{ animatedTitle }}</div>
+    <div v-if="!scene.fullscreen" class="title">{{ animatedTitle }}
+      <div class='ombre' :style="{ 'background-color': primarycolor }" ></div>
+    </div>
     <div :class="{fullscreen: scene.fullscreen}" class="content">
       <img v-if="!iframeContent" :src="scene.picture" :class="{ loading: scene.picture }" v-on:load="loaded($event)" v-on:error="failed($event)">
       <iframe v-else :src="iframeContent" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
@@ -43,6 +45,18 @@ export default {
     },
     logo () {
       return this.scene.logo ? this.scene.logo + '?height=72' : null
+    },
+    primarycolor () {
+      var regex = RegExp('^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$')
+      if (regex.test(this.scene.primarycolor)) {
+        if (this.scene.primarycolor.indexOf('#') === -1) {
+          return this.scene.primarycolor ? '#' + this.scene.primarycolor : '#790102'
+        } else {
+          return this.scene.primarycolor ? this.scene.primarycolor : '#790102'
+        }
+      } else {
+        return '#790102'
+      }
     }
   },
   watch: {
@@ -131,9 +145,11 @@ export default {
   background-size: cover;
   width: 100vw;
   height: 100vh;
+  position:relative;
+  z-index:-5 ;
 }
 
-.scene .title {
+.title {
   align-self: flex-start; /* sized to content */
   flex: 1 0 auto; /* grow to content */
   margin: 0.5em 30px;
@@ -152,16 +168,15 @@ export default {
   position: relative;
 }
 
-.scene .title::after {
+.ombre {
   content: '';
-  position: absolute;
-  top: -30%;
-  left: -30%;
-  width: 100%;
+  position: relative;
+  top: -125%;
+  left: -60%;
+  width: 120%;
   height: 80%;
   border-radius: 0 30px 30px 0;
-  background-color: var(--mdc-theme-primary);
-  z-index: -1;
+  z-index:-1;
 }
 
 @media (min-width: 481px) and (max-width: 840px) {
@@ -203,6 +218,7 @@ export default {
 	max-width: 100%;
   max-height: 100%;
 	object-fit: contain;
+  z-index:-2;
 }
 
 .scene .content iframe {

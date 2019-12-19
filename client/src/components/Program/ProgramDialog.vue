@@ -36,6 +36,11 @@
           <img :src="program.background"/>
           <input type="file" name="background" accept="image/*" class="input-file" v-on:change="fileChange($event);" style="display: none;">
         </div>
+         <div class="mdc-text-field mdc-text-field--fullwidth mdc-text-field--with-trailing-icon" v-bind:class="{ 'mdc-text-field--upgraded' : program.primarycolor }">
+              
+          <label for="primarycolor" class="mdc-text-field__label" v-bind:class="{ 'mdc-text-field__label--float-above' : program.primarycolor }">{{ $t('program.primarycolor_label') }}</label>
+          <input type="color" id="primarycolor" class="mdc-text-field__input" v-model.lazy="program.primarycolor" v-on:keyup.enter="confirm">
+        </div>
       </section>
       <footer class="mdc-dialog__footer">
         <button type="button" class="mdc-button mdc-dialog__footer__button mdc-dialog__footer__button--delete" v-on:click="deleteProgram(program)">
@@ -182,6 +187,10 @@ export default {
   background: transparent;
   background-repeat: no-repeat;
   background-position: center center;
+}
+
+#primarycolor{
+  margin-top: 12px;
 }
 
 .mdc-dialog__body .picture.thumbnail img {

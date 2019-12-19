@@ -232,6 +232,7 @@ router.route('/:episodeId')
           scene.fullscreen = false
           scene.picture = null
           scene.logo = null
+          scene.primarycolor = null;
           scene.save()
 
           res.status(204).json(result.toString())
@@ -288,6 +289,7 @@ router.get('/:episodeId/start', function (req, res, next) {
         scene.picture = null
         scene.logo = req.program.logo
         scene.background = req.program.background
+        scene.primarycolor = req.program.primarycolor
         scene.save()
       })
       .catch(function(error) {
@@ -365,6 +367,7 @@ router.get('/:episodeId/stop', function (req, res, next) {
           scene.fullscreen = false
           scene.picture = null
           scene.logo = null
+          scene.primarycolor = null
           scene.save()
         })
         .catch(function(error) {

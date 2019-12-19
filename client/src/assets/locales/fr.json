@@ -17,7 +17,8 @@
 		"title": "{0} Émissions",
 		"name_label": "Nom",
 		"episodes_count": "{0} Épisode{1}",
-		"unnamed": "Émission sans nom"
+		"unnamed": "Émission sans nom",
+		"primarycolor_label": "Couleur Primaire"
 	},
 	"episode": {
 		"name_label": "Nom",
@@ -33,10 +34,10 @@
 	},
 	"drawer": {
 		"title": "Studio Renegade Remote Regie",
-	  	"programs_label": "Émissions",
-	  	"scene_label": "Scène",
-	  	"settings_label": "Réglages",
-	  	"api_label": "API"
+		"programs_label": "Émissions",
+		"scene_label": "Scène",
+		"settings_label": "Réglages",
+		"api_label": "API"
 	},
 	"settings": {
 		"title_input_label": "Titre",

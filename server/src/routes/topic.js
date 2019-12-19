@@ -307,6 +307,7 @@ router.get('/:topicId/start', function (req, res, next) {
       scene.media = null // no content should be displayed when cast start talking about a Topic
       scene.picture = null
       scene.fullscreen = false
+      scene.primarycolor = req.program.primarycolor
 
       // we start the parent Episode if it isn't already
       if (!(req.episode.started && !req.episode.ended)) {
@@ -378,9 +379,10 @@ router.get('/:topicId/stop', function (req, res, next) {
         let scene = new Scene()
         scene.topic = null
         scene.media = null
-        scene.title = req.episode.name
+        scene.title = req.episode.name        
         scene.picture = null
         scene.fullscreen = false
+        scene.primarycolor = req.program.primarycolor
         scene.save()
 
         logger.debug(`Stopped Topic\n${topic.toString()}`)

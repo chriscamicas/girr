@@ -17,7 +17,8 @@
 		"title": "{0} Programs",
 		"name_label": "Name",
 		"episodes_count": "{0} Episode{1}",
-		"unnamed": "Unnamed Program"
+		"unnamed": "Unnamed Program",
+		"primarycolor_label": "Primary color"
 	},
 	"episode": {
 		"name_label": "Name",

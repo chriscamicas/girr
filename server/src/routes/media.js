@@ -413,6 +413,7 @@ router.get('/:mediaId/start', function (req, res, next) {
         scene.fullscreen = req.topic.fullscreen
         scene.logo = req.program.logo
         scene.background = req.program.background;
+        scene.primarycolor = req.program.primarycolor;
 
 
         // we start the parent Topic if it isn't already
@@ -488,6 +489,7 @@ router.get('/:mediaId/stop', function (req, res, next) {
         scene.media = null
         scene.picture = null
         scene.fullscreen = false
+        scene.primarycolor = req.program.primarycolor
         scene.save()
         res.json(media)
       })

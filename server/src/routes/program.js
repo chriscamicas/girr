@@ -82,6 +82,9 @@ router.param('programId', function (req, res, next, value, name) {
     .findOne({_id: value})
     .then(function(program) {
       if (program !== null) {
+        if(!program.primarycolor){
+          program.primarycolor = "#790102";
+        }
         req.program = program
         next()
       } else {
