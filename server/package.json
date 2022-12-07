@@ -17,7 +17,7 @@
     "body-parser": "^1.17.2",
     "circular-json": "^0.5.1",
     "dotenv-extended": "^2.0.1",
-    "express": "^4.13.4",
+    "express": "^4.17.3",
     "express-basic-auth": "^1.1.2",
     "jimp": "^0.2.28",
     "memory-cache": "^0.2.0",
